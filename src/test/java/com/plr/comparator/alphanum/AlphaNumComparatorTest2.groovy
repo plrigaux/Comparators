@@ -1,21 +1,24 @@
 package com.plr.comparator.alphanum
 
+import static org.hamcrest.number.OrderingComparison.greaterThan;
+
+import spock.lang.Shared;
 import spock.lang.Specification
 
 class AlphaNumComparatorTest2 extends Specification {
 
 
-	AlphaNumComparator alphaNumComparator = null;
+	@Shared AlphaNumComparator alphaNumComparator = null;
 
 
-	def setup() {
+	def setupSpec() {
 		alphaNumComparator = new AlphaNumComparator();
 	}
 
 
 	def "test sort list" () {
+		given:
 
-		when:
 		def list = [
 			"z1.doc",
 			"z10.doc",
@@ -67,18 +70,23 @@ class AlphaNumComparatorTest2 extends Specification {
 			"z101.doc",
 			"z102.doc",
 		]
-		then:
+
+
+
+		when: "Do nothing"
+
+		then: "The list aren't equal"
 		list != expected
 
-		when:
+		when: "Sorting list"
 		Collections.sort(list, alphaNumComparator)
 
-		then:
+		then: "The list are equal"
 		list == expected
 	}
 
 	def "product names sort"() {
-		when:
+		given:
 		def list = [
 			"1000X Radonius Maximus",
 			"10X Radonius",
@@ -155,13 +163,46 @@ class AlphaNumComparatorTest2 extends Specification {
 			"Xiph Xlater 10000"
 		]
 
-		then:
+		when: "Do nothing"
+
+		then: "The list aren't equal"
 		list != expected
 
-		when:
+		when: "Sorting list"
 		Collections.sort(list, alphaNumComparator)
 
-		then:
+		then: "The list are equal"
 		list == expected
+	}
+
+	enum CompType {
+		GREATER, LESS, EQUAL
+	}
+
+	boolean compToZero(int val, CompType compType) {
+
+		switch (compType) {
+			case CompType.GREATER:
+				return val > 0
+			case CompType.LESS:
+				return val < 0
+			case CompType.EQUAL:
+				return val == 0
+		}
+	}
+
+	def "Mutiple cases"() {
+
+		expect:
+
+		compToZero (alphaNumComparator.compare(a, b) , c ) == d
+
+	
+
+		where:
+
+		a | b | c | d
+		"doc20.doc" | "doc10.doc" | CompType.GREATER | true
+		"doc20.doc" | "doc10.doc" | CompType.LESS | false
 	}
 }

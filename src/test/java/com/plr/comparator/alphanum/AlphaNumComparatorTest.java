@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+
 public class AlphaNumComparatorTest {
 
 	AlphaNumComparator alphaNumComparator = null;
@@ -29,4 +30,17 @@ public class AlphaNumComparatorTest {
 		Assert.assertThat(ret, greaterThan(0));
 	}
 
+	@Test
+	public void basic3() {
+		int ret = alphaNumComparator.compare("doc2.1.doc", "doc2.2.doc");
+
+		Assert.assertThat(ret, lessThan(0));
+	}
+	
+	@Test
+	public void basic4() {
+		int ret = alphaNumComparator.compare("doc2.10.doc", "doc2.2.doc");
+
+		Assert.assertThat(ret, greaterThan(0));
+	}
 }
