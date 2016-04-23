@@ -1,8 +1,7 @@
 package com.plr.comparator.alphanum
 
-import static org.hamcrest.number.OrderingComparison.greaterThan;
 
-import spock.lang.Shared;
+import spock.lang.Shared
 import spock.lang.Specification
 
 class AlphaNumComparatorTest2 extends Specification {
@@ -179,8 +178,10 @@ class AlphaNumComparatorTest2 extends Specification {
 		GREATER, LESS, EQUAL
 	}
 
-	boolean compToZero(int val, CompType compType) {
+	boolean compToZero(CharSequence s1, CharSequence s2, CompType compType) {
 
+		int val = alphaNumComparator.compare(s1, s2)
+		
 		switch (compType) {
 			case CompType.GREATER:
 				return val > 0
@@ -195,14 +196,17 @@ class AlphaNumComparatorTest2 extends Specification {
 
 		expect:
 
-		compToZero (alphaNumComparator.compare(a, b) , c ) == d
+		compToZero (a, b, c) == true
 
 	
 
 		where:
 
-		a | b | c | d
-		"doc20.doc" | "doc10.doc" | CompType.GREATER | true
-		"doc20.doc" | "doc10.doc" | CompType.LESS | false
+		a 				| b 			| c
+		"doc20.doc" 	| "doc10.doc" 	| CompType.GREATER
+		"doc10.doc"		| "doc20.doc" 	| CompType.LESS
+		"doc2.doc"		| "doc10.doc" 	| CompType.LESS
+		"doc2.1.doc"	| "doc2.2.doc"	| CompType.LESS
+		"doc2.10.doc"	| "doc2.2.doc"	| CompType.GREATER
 	}
 }
