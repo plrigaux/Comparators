@@ -1,5 +1,7 @@
 package com.plr.comparator.alphanum;
 
+import java.text.Collator;
+
 /*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
@@ -27,19 +29,28 @@ package com.plr.comparator.alphanum;
 import java.util.Comparator;
 
 public class AlphaNumComparator implements Comparator<CharSequence> {
-	
-	
-	private final boolean isDigit(char ch) {
-		return Character.isDigit(ch);
-		//return ch >= 48 && ch <= 57;
-		
+
+	private final Collator collator;
+
+	public AlphaNumComparator() {
+		collator = null;
+	}
+
+	public AlphaNumComparator(Collator collator) {
+		this.collator = collator;
+	}
+
+	static final boolean isDigit(char ch) {
+		return Character.isDigit(ch) || ch == '-';
+		// return ch >= 48 && ch <= 57;
+
 	}
 
 	/**
 	 * Length of string is passed in for improved efficiency (only need to
 	 * calculate it once)
 	 **/
-	private final StringBuilderSpecial getChunk(CharSequence s, int slength, int marker) {
+	static final StringBuilderSpecial getChunk(CharSequence s, int slength, int marker) {
 		StringBuilderSpecial chunk = new StringBuilderSpecial(slength);
 		char c = s.charAt(marker);
 		chunk.append(c);
@@ -94,7 +105,11 @@ public class AlphaNumComparator implements Comparator<CharSequence> {
 					}
 				}
 			} else {
-				result = thisChunk.compareTo(thatChunk);
+				if (collator != null) {
+					result = collator.compare(thisChunk, thatChunk);
+				} else {
+					result = thisChunk.compareTo(thatChunk);
+				}
 			}
 
 			if (result != 0) {
