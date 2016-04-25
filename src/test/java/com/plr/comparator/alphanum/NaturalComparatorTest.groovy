@@ -117,8 +117,11 @@ class NaturalComparatorTest extends Specification {
 		list != expected
 
 		when: "Sorting list"
+		
+		println list
 		Collections.sort(list, naturalComparator)
-
+		println list
+		
 		then: "The list are equal"
 		list == expected
 	}
@@ -270,6 +273,14 @@ class NaturalComparatorTest extends Specification {
 		Collections.sort(list, naturalComparator)
 
 		then: "The list are equal"
+		
+		println list
+		println expected
+		
+		for(int i = 0; i < list.size(); i++) {
+			list[i] == expected[i]
+		}
+		
 		list == expected
 	}
 
@@ -309,4 +320,56 @@ class NaturalComparatorTest extends Specification {
 		"-20"	| "10"	| LESS
 		"-20"	| "-10"	| LESS
 	}
+	
+	def "Mutiple cases2"() {
+	
+		
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator();
+
+		expect:
+
+		compToZero (naturalComparator, "z1.doc", "z11.doc", LESS) == true
+		compToZero (naturalComparator, "z11.doc", "z1.doc", GREATER) == true
+		
+		compToZero (naturalComparator, "z1.doc", "z11.doc", GREATER) == false
+		compToZero (naturalComparator, "z11.doc", "z1.doc", LESS) == false
+		
+		
+		compToZero (naturalComparator, "z10.doc", "z11.doc", LESS) == true
+		compToZero (naturalComparator, "z11.doc", "z10.doc", GREATER) == true
+
+	}
+	
+	def "Mutiple cases3"() {
+		
+			
+			given:
+			NaturalComparator naturalComparator = new NaturalComparator();
+			
+//			def s1 = "Alpha 2A-8000"
+//			def s2 = "Alpha 2A-900"
+			
+			def s1 = "1-2"
+def s2 = "1-02"
+			
+			int val = naturalComparator.compare(s1, s2);
+	
+			println "The val: $val"
+			
+			println "s1: " + naturalComparator.split(s1)
+			
+			println "s2: " +  naturalComparator.split(s2)
+			
+			NumberTokenComparable nt1 = new NumberTokenComparable("10");
+			NumberTokenComparable nt2 = new NumberTokenComparable("11");
+			
+			expect:
+	
+			nt1.compareTo(nt2) < 0
+			
+			//compToZero (naturalComparator, "z10.doc", "z11.doc", LESS) == true
+			//compToZero (naturalComparator, "z11.doc", "z10.doc", GREATER) == true
+	
+		}
 }
