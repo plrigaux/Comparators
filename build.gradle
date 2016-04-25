@@ -21,6 +21,8 @@ dependencies {
 
 	testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
 
+	compile 'com.google.guava:guava:19.0'
+	
 	// We use the latest groovy 2.x version for Spock testing
 	compile 'org.codehaus.groovy:groovy-all:2.4.6'
 
