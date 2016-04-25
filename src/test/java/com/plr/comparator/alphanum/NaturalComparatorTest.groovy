@@ -50,6 +50,8 @@ class NaturalComparatorTest extends Specification {
 		"03.50"	| "-10"	| LESS
 		"00003"	| "-10"	| LESS
 		"0.3000"	| "-10"	| LESS
+		"pics 5"	| "-10"	| LESS
+		"pics    5"	| "-10"	| LESS
 	}
 
 	def "test sort list" () {

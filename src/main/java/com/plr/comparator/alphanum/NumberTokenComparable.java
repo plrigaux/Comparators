@@ -44,6 +44,19 @@ public class NumberTokenComparable extends TokenComparable {
 		int last1 = s1.length();
 		int last2 = s2.length();
 		
+		//clean front space
+		for (; beg1 < last1; beg1++) {
+			if (!Character.isWhitespace(s1.charAt(beg1))) {
+				break;
+			}
+		}
+		
+		for (; beg2 < last2; beg2++) {
+			if (!Character.isWhitespace(s2.charAt(beg2))) {
+				break;
+			}
+		}
+		
 		//clean zeros
 		for (; beg1 < last1; beg1++) {
 			if (s1.charAt(beg1) != '0') {

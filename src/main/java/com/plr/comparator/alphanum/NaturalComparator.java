@@ -45,7 +45,7 @@ public class NaturalComparator implements Comparator<String> {
 	}
 
 	//final static String NUM_PAT = "(:?(?<!\\d)[-+])?\\d+(?:(?:\\.\\d++)(?!\\.\\d))?";
-	final static String NUM_PAT = "(:?^[-+])?\\d+(?:(?:\\.\\d++)(?!\\.\\d))?";
+	final static String NUM_PAT = "(:?\\s)*(:?^[-+])?\\d+(?:(?:\\.\\d++)(?!\\.\\d))?";
 
 	final static Pattern PATTERN = Pattern.compile(NUM_PAT);
 
