@@ -18,7 +18,15 @@ class NaturalComparatorTest extends Specification {
 
 		given:
 		NaturalComparator naturalComparator = new NaturalComparator();
+		
+		
 		def list = naturalComparator.split(first)
+		
+		def list2 = []
+		
+		list.each { token ->
+			list2 << token.getStr()
+		}
 
 		println "$first -> $list"
 
@@ -26,34 +34,99 @@ class NaturalComparatorTest extends Specification {
 
 
 
-		list.size() >= 0
+		list2 == expected
 
 
 		where:
 
-		first 			| second 		| comparison
-		"doc20.doc" 	| "doc10.doc" 	| GREATER
-		"doc10.doc"		| "doc20.doc" 	| LESS
-		"doc2.doc"		| "doc10.doc" 	| LESS
-		"doc2.1.doc"	| "doc2.2.doc"	| LESS
-		"doc2.10.doc"	| "doc2.2.doc"	| GREATER
-		"20"	| "10"	| GREATER
-		"2"	| "10"	| LESS
-		"-20"	| "10"	| LESS
-		"-20"	| "-10"	| LESS
-		"-20.234"	| "-10"	| LESS
-		"asdf-20.234"	| "-10"	| LESS
-		"asdf-20.234asdf"	| "-10"	| LESS
-		"TEST20.23.4.8asdf"	| "-10"	| LESS
-		"TEST20-23-4-8asdf"	| "-10"	| LESS
-		"TEST20-23-4-8asdf"	| "-10"	| LESS
-		"03.50"	| "-10"	| LESS
-		"00003"	| "-10"	| LESS
-		"0.3000"	| "-10"	| LESS
-		"pics 5"	| "-10"	| LESS
-		"pics    5"	| "-10"	| LESS
+		first 				| expected 		
+		"doc20.doc" 		| ["doc", "20", ".doc" ] 	
+		"doc10.doc"			| ["doc", "10", ".doc" ] 
+		"doc2.doc"			| ["doc", "2", ".doc" ] 	
+		"doc2.1.doc"		| ["doc", "2.1", ".doc" ] 	
+		"doc2.10.doc"		| ["doc", "2.10", ".doc" ] 	
+		
+		//pure numbers
+		"20"				| ["20"]	
+		"2"					| ["2"]
+		"-20"				| ["-20"]
+		" -40"				| [" -40"]
+		"-20.234"			| ["-20.234"]
+		
+		//comma or hyphen in string
+		"asdf-20.234"		| ["asdf-", "20.234"]
+		"asdf-20.234asdf"	| ["asdf-", "20.234", "asdf"]
+		"TEST20.23.4.8asdf"	| ["TEST", "20", ".", "23", ".", "4.8", "asdf"]
+		"TEST20-23-4-8asdf"	| ["TEST", "20", "-", "23", "-", "4", "-", "8", "asdf"]
+		
+		//zeros
+		"03.50"				| ["03.50"]
+		"00003"				| ["00003"]
+		"0.3000"			| ["0.3000"]
+		
+		//spaces
+		"pics 5"			| ["pics", " 5"]
+		"pics    5"			| ["pics", "    5"]
+		"pics 5 test"		| ["pics", " 5", " test"]
+		"pics    5 6"		| ["pics", "    5", " 6"]
 	}
 
+	def "Pure numbers" () {
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator();
+		
+		def expected = ["-123", "-12",
+			"-1.1532456", "-1.15", "-1.1" , "-1", "-0.99",
+			"-0.15", "-0.1",  "0", "0.1", "0.15", "1",  "1.1", "1.15",
+			"11.1", "11.67", "11.6756745674", "11.68", "12", "123"]
+		
+		def list = []
+		
+		list.addAll(expected)
+
+		Collections.shuffle(list)
+
+		when: "Do nothing"
+
+		then: "The list aren't equal"
+		list != expected
+
+		when: "Sorting list"
+		Collections.sort(list, naturalComparator)
+
+		then: "The list are equal"
+		
+		println list
+		println expected
+		
+		for(int i = 0; i < list.size(); i++) {
+			list[i] == expected[i]
+		}
+		
+		list == expected
+	}
+	
+	def "Pure numbers comparaizon"() {
+		
+				given:
+				NaturalComparator naturalComparator = new NaturalComparator();
+		
+				expect:
+		
+				naturalComparator.compare(smaller, bigger) < 0
+				naturalComparator.compare(bigger , smaller) > 0
+		
+				where:
+		
+				smaller 		| bigger 		
+				"-123"			| "-1.15" 
+				"-1.1532456"	| "-1.15"
+				"123"			| "1234"
+				"-1.1532456"	| "-1"
+				
+			}
+	
+	
 	def "test sort list" () {
 		given:
 		NaturalComparator naturalComparator = new NaturalComparator();
@@ -209,7 +282,7 @@ class NaturalComparatorTest extends Specification {
 			"Xiph Xlater 5000",
 			"Xiph Xlater 10000"
 		]
-
+	
 		when: "Do nothing"
 
 		then: "The list aren't equal"
@@ -363,8 +436,10 @@ def s2 = "1-02"
 			
 			println "s2: " +  naturalComparator.split(s2)
 			
-			NumberTokenComparable nt1 = new NumberTokenComparable("10");
-			NumberTokenComparable nt2 = new NumberTokenComparable("11");
+			
+			
+			NumberTokenComparable nt1 = new NumberTokenComparable("10", NaturalComparator.ASCII);
+			NumberTokenComparable nt2 = new NumberTokenComparable("11", NaturalComparator.ASCII);
 			
 			expect:
 	

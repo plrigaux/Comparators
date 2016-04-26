@@ -34,18 +34,29 @@ import java.util.regex.Pattern;
 
 public class NaturalComparator implements Comparator<String> {
 
-	private final Collator collator;
+	final private Comparator<String> comparator;
+
+	final static String NUM_PAT = "(?:\\s)*((?:^|\\s)[-])?(\\d+)((\\.\\d++)(?!\\.\\d))?";
+
+	final static public Comparator<String> ASCII = new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
+		}
+	};
 
 	public NaturalComparator() {
-		collator = null;
+		comparator = ASCII;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NaturalComparator(Collator collator) {
-		this.collator = collator;
+		this.comparator = (Comparator) collator;
 	}
 
-	//final static String NUM_PAT = "(:?(?<!\\d)[-+])?\\d+(?:(?:\\.\\d++)(?!\\.\\d))?";
-	final static String NUM_PAT = "(:?\\s)*(:?^[-+])?\\d+(?:(?:\\.\\d++)(?!\\.\\d))?";
+	public NaturalComparator(Comparator<String> collator) {
+		this.comparator = collator;
+	}
 
 	final static Pattern PATTERN = Pattern.compile(NUM_PAT);
 
@@ -59,18 +70,32 @@ public class NaturalComparator implements Comparator<String> {
 		while (matcher.find()) {
 			if (start != matcher.start()) {
 				String prev = toSplit.substring(start, matcher.start());
-				list.add(new AlphaTokenComparable(prev));
+				list.add(new AlphaTokenComparable(prev, comparator));
 			}
 
-			String num = toSplit.substring(matcher.start(), matcher.end());
-			list.add(new NumberTokenComparable(num));
+//			for (int i = 0; i < matcher.groupCount(); i++) {
+//				System.out.println("Gr" + i + ": " + matcher.group(i));
+//			}
 
+			boolean isNegative = "-".equals(matcher.group(1));
+			String number = matcher.group(2);
+			String decimal = matcher.group(3);
+
+			if (decimal != null) {
+				decimal = decimal.substring(1);
+			}
+			
+			// String num = toSplit.substring(matcher.start(), matcher.end());
+			list.add(new NumberTokenComparable(isNegative, number, decimal, comparator));
+
+			
+			
 			start = matcher.end();
 		}
 
 		if (start != toSplit.length()) {
 			String last = toSplit.substring(start, toSplit.length());
-			list.add(new AlphaTokenComparable(last));
+			list.add(new AlphaTokenComparable(last, comparator));
 		}
 
 		return list;

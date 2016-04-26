@@ -1,23 +1,28 @@
 package com.plr.comparator.alphanum;
 
+import java.util.Comparator;
+
 abstract public class TokenComparable implements Comparable<TokenComparable> {
 
-	String s;
 
-	TokenComparable(String s) {
-		this.s = s;
+	final Comparator<String> comparator;
+
+	TokenComparable( Comparator<String> comparator) {
+		this.comparator = comparator;
 	}
 
 	@Override
 	public int compareTo(TokenComparable o) {
-		return s.compareTo(o.s);
+		return comparator.compare(getStr(), o.getStr());
 	}
 
 	@Override
 	public String toString() {
-		return s.toString() + "(num? " + isNumber() + ")";
+		return getStr().toString() + "(num? " + isNumber() + ")";
 	}
 
+	public abstract String getStr();
+	
 	abstract boolean isNumber();
 
 	boolean isNegative() {
