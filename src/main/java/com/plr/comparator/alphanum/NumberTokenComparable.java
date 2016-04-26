@@ -2,6 +2,7 @@ package com.plr.comparator.alphanum;
 
 import java.util.Comparator;
 
+
 public class NumberTokenComparable extends TokenComparable {
 
 	private final boolean isNegative;
@@ -9,17 +10,62 @@ public class NumberTokenComparable extends TokenComparable {
 	private final String decimal;
 	private final String str;
 
-	NumberTokenComparable(boolean isNegative, String units, String decimal, Comparator<String> comparator) {
+	NumberTokenComparable(String str, Comparator<String> comparator) {
+		super(comparator);
+		this.str = str;
+
+		int len = str.length();
+		int i = 0;
+		char c = 0;
+
+		for (; i < len; i++) {
+			c = str.charAt(i);
+
+			if (!Character.isWhitespace(c)) {
+				break;
+			}
+		}
+
+		boolean isNegative = false;
+
+		if (c == '-') {
+			isNegative = true;
+			c = str.charAt(++i);
+		}
+
+		this.isNegative = isNegative;
+
+		int start = i;
+		do {
+			if (!Character.isDigit(c)) {
+				c = str.charAt(i++);
+				break;
+			}
+
+			c = str.charAt(i++);
+		} while (i < len);
+
+		this.units = str.substring(start, i);
+
+		String decimal = null;
+		start = i;
+
+		while (Character.isDigit(c) && i < len) {
+			c = str.charAt(i++);
+		}
+
+		if (start != i) {
+			decimal = str.substring(start, i);
+		}
+
+		this.decimal = decimal;
+	}
+
+	NumberTokenComparable(boolean isNegative, String units, String decimal, String str, Comparator<String> comparator) {
 		super(comparator);
 		this.isNegative = isNegative;
 		this.decimal = decimal;
 		this.units = units;
-
-		String str = isNegative ? "-" : "";
-		str += units;
-		if (decimal != null) {
-			str += "." + decimal;
-		}
 		this.str = str;
 	}
 
@@ -52,62 +98,38 @@ public class NumberTokenComparable extends TokenComparable {
 
 	}
 
-	private int comapreNum(String s1, String s2, NumberTokenComparable o) {
+	private int comapreNum(String s1, String s2, NumberTokenComparable other) {
 
 		int beg1 = 0;
 		int beg2 = 0;
 
-		int last1 = s1.length();
-		int last2 = s2.length();
+		int len1 = s1.length();
+		int len2 = s2.length();
 
-		// clean front space
-		for (; beg1 < last1; beg1++) {
-			if (!Character.isWhitespace(s1.charAt(beg1))) {
-				break;
-			}
-		}
-
-		for (; beg2 < last2; beg2++) {
-			if (!Character.isWhitespace(s2.charAt(beg2))) {
-				break;
-			}
-		}
-
-		// clean zeros
-		for (; beg1 < last1 - 1; beg1++) {
-			if (s1.charAt(beg1) != '0') {
-				break;
-			}
-		}
-
-		for (; beg2 < last2 - 1; beg2++) {
-			if (s2.charAt(beg2) != '0') {
-				break;
-			}
-		}
-
-		int result = (last1 - beg1) - (last2 - beg2);
+		int result = len1 - len2;
 
 		// If equal size, the first different number counts
 		if (result == 0) {
-			for (int i = beg1, j = beg2; i < last1; i++, j++) {
+			for (int i = beg1, j = beg2; i < len1; i++, j++) {
 				result = s1.charAt(i) - s2.charAt(j);
 				if (result != 0) {
 					return result;
 				}
 			}
 
-			result = comapreDecimals(o);
+			result = comapreDecimals(other);
 
-			// look at zeros difference
 			if (result != 0) {
 				return result;
 			}
-
-			return beg1 - beg2;
-			// if (beg1 != start || beg2 != start) {
-			// result = super.compareTo(o);
-			// }
+			
+			//The one that have less leading zeros or space is the smallest
+			String otherStr = other.str;
+			
+			len1 = str.length();
+			len2 = otherStr.length();
+			
+			result = len1 - len2;
 		}
 
 		return result;
@@ -130,46 +152,38 @@ public class NumberTokenComparable extends TokenComparable {
 			}
 		}
 
-		int beg1 = 0;
-		int beg2 = 0;
+		int len1 = s1.length();
+		int len2 = s2.length();
 
-		int last1 = s1.length();
-		int last2 = s2.length();
-
-
-		// clean zeros
-		for (; beg1 < last1 - 1; beg1++) {
-			if (s1.charAt(beg1) != '0') {
+		// clean tailling zeros
+		for (; len1 >= 0; len1--) {
+			if (s1.charAt(len1 - 1) != '0') {
 				break;
 			}
 		}
 
-		for (; beg2 < last2 - 1; beg2++) {
-			if (s2.charAt(beg2) != '0') {
+		for (; len2 >= 0; len2--) {
+			if (s2.charAt(len2 - 1) != '0') {
 				break;
 			}
 		}
 
-		int result = (last1 - beg1) - (last2 - beg2);
+		int lim = Math.min(len1, len2);
 
-		// If equal size, the first different number counts
-		if (result == 0) {
-			for (int i = beg1, j = beg2; i < last1; i++, j++) {
-				result = s1.charAt(i) - s2.charAt(j);
-				if (result != 0) {
-					return result;
-				}
+		for (int k = 0; k < lim; k++) {
+			char c1 = s1.charAt(k);
+			char c2 = s2.charAt(k);
+
+			int result = c1 - c2;
+
+			if (result != 0) {
+				return result;
 			}
 
-			// look at zeros difference
-
-			return beg1 - beg2;
-			// if (beg1 != start || beg2 != start) {
-			// result = super.compareTo(o);
-			// }
 		}
 
-		return result;
+		return len1 - len2;
+
 	}
 
 	boolean isNegative() {

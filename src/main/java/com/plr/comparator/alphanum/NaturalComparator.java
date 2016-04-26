@@ -36,8 +36,9 @@ public class NaturalComparator implements Comparator<String> {
 
 	final private Comparator<String> comparator;
 
-	final static String NUM_PAT = "(?:\\s)*((?:^|\\s)[-])?(\\d+)((\\.\\d++)(?!\\.\\d))?";
-
+	//TODO make the regex not capture the point 
+	final static String NUM_PAT = "(?:\\s)*((?:^|\\s)[-])?0*([1-9]\\d*|0)((\\.\\d++)(?!\\.\\d))?";
+	
 	final static public Comparator<String> ASCII = new Comparator<String>() {
 		@Override
 		public int compare(String o1, String o2) {
@@ -80,15 +81,14 @@ public class NaturalComparator implements Comparator<String> {
 			boolean isNegative = "-".equals(matcher.group(1));
 			String number = matcher.group(2);
 			String decimal = matcher.group(3);
+			String wholeStr = matcher.group(0);
 
+			//TODO make the regex not capture the point 
 			if (decimal != null) {
 				decimal = decimal.substring(1);
 			}
 			
-			// String num = toSplit.substring(matcher.start(), matcher.end());
-			list.add(new NumberTokenComparable(isNegative, number, decimal, comparator));
-
-			
+			list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr, comparator));
 			
 			start = matcher.end();
 		}
@@ -111,17 +111,25 @@ public class NaturalComparator implements Comparator<String> {
 		int lim = Math.min(len1, len2);
 
 		int k = 0;
+		int result;
 		while (k < lim) {
 			TokenComparable ss1 = list1.get(k);
 			TokenComparable ss2 = list2.get(k);
 
-			int result = ss1.compareTo(ss2);
+			result = ss1.compareTo(ss2);
 
 			if (result != 0) {
 				return result;
 			}
 			k++;
 		}
-		return len1 - len2;
+		
+		result =  len1 - len2;
+		
+		if (result == 0) {
+			return s1.compareTo(s2);
+		}
+		
+		return result;
 	}
 }

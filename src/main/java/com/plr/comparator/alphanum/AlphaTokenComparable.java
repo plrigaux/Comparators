@@ -4,13 +4,21 @@ import java.util.Comparator;
 
 public class AlphaTokenComparable extends TokenComparable {
 
-	AlphaTokenComparable(String s, Comparator<String> comparator) {
-		super(s, comparator);
+	private final String str;
+	
+	AlphaTokenComparable(String str, Comparator<String> comparator) {
+		super(comparator);
+		this.str = str;
 	}
 
 	@Override
 	boolean isNumber() {
 		return false;
+	}
+
+	@Override
+	public String getStr() {
+		return str;
 	}
 
 }

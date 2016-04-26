@@ -76,7 +76,7 @@ class NaturalComparatorTest extends Specification {
 		NaturalComparator naturalComparator = new NaturalComparator();
 		
 		def expected = ["-123", "-12",
-			"-1.1532456", "-1.15", "-1.1" , "-1", "-0.99",
+			"-1.1532456", "-1.15", "-1.1" , "-1", "-0.99999999999", "-0.99",
 			"-0.15", "-0.1",  "0", "0.1", "0.15", "1",  "1.1", "1.15",
 			"11.1", "11.67", "11.6756745674", "11.68", "12", "123"]
 		
@@ -314,8 +314,8 @@ class NaturalComparatorTest extends Specification {
 			"pic4",
 			"pic 4 else",
 			"pic 5",
-			"pic05",
 			"pic 5",
+			"pic05",
 			"pic 5 something",
 			"pic 6",
 			"pic   7",
@@ -349,8 +349,8 @@ class NaturalComparatorTest extends Specification {
 
 		then: "The list are equal"
 		
-		println list
-		println expected
+		println "Sorted:   " + list
+		println "Expected: " + expected
 		
 		for(int i = 0; i < list.size(); i++) {
 			list[i] == expected[i]
@@ -389,11 +389,14 @@ class NaturalComparatorTest extends Specification {
 		"doc10.doc"		| "doc20.doc" 	| LESS
 		"doc2.doc"		| "doc10.doc" 	| LESS
 		"doc2.1.doc"	| "doc2.2.doc"	| LESS
-		"doc2.10.doc"	| "doc2.2.doc"	| GREATER
-		"20"	| "10"	| GREATER
-		"2"	| "10"	| LESS
-		"-20"	| "10"	| LESS
-		"-20"	| "-10"	| LESS
+		"doc2.10.doc"	| "doc2.2.doc"	| LESS
+		"20"			| "10"			| GREATER
+		"2"				| "10"			| LESS
+		"-20"			| "10"			| LESS
+		"-20"			| "-10"			| LESS
+		"pic05"			| "pic 5"		| GREATER
+		"pic02000"		| "pic2"		| GREATER
+		"1-2"			| "1-02"		| LESS
 	}
 	
 	def "Mutiple cases2"() {
@@ -417,36 +420,43 @@ class NaturalComparatorTest extends Specification {
 	}
 	
 	def "Mutiple cases3"() {
-		
-			
-			given:
-			NaturalComparator naturalComparator = new NaturalComparator();
-			
-//			def s1 = "Alpha 2A-8000"
-//			def s2 = "Alpha 2A-900"
-			
-			def s1 = "1-2"
-def s2 = "1-02"
-			
-			int val = naturalComparator.compare(s1, s2);
-	
-			println "The val: $val"
-			
-			println "s1: " + naturalComparator.split(s1)
-			
-			println "s2: " +  naturalComparator.split(s2)
-			
-			
-			
-			NumberTokenComparable nt1 = new NumberTokenComparable("10", NaturalComparator.ASCII);
-			NumberTokenComparable nt2 = new NumberTokenComparable("11", NaturalComparator.ASCII);
-			
-			expect:
-	
-			nt1.compareTo(nt2) < 0
-			
-			//compToZero (naturalComparator, "z10.doc", "z11.doc", LESS) == true
-			//compToZero (naturalComparator, "z11.doc", "z10.doc", GREATER) == true
-	
-		}
+
+
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator();
+
+		//			def s1 = "Alpha 2A-8000"
+		//			def s2 = "Alpha 2A-900"
+
+		def s1 = "1-2"
+		def s2 = "1-02"
+
+		int val = naturalComparator.compare(s1, s2);
+
+		println "The val: $val"
+
+		println "s1: " + naturalComparator.split(s1)
+
+		println "s2: " +  naturalComparator.split(s2)
+
+
+
+		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
+		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, NaturalComparator.ASCII);
+
+		expect:
+
+		nt1.compareTo(nt2) < 0
+		nt2.compareTo(nt1) > 0
+
+
+		where:
+
+		smaller		|	bigger
+		"10"		| "11"
+		"10.12"		| "10.123"
+		"-10.12"	| "10.123"
+		"-10.123"	| "-10.12"
+		"-10.123"	| "10.12"
+	}
 }
