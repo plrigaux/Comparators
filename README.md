@@ -68,10 +68,26 @@ Not negative: "Something-45"
 
 ## Space insensitive
 
+The comparator doesn't take care of white spaces in front of numbers.
+
+## Heading zeros incensitive
+The comparator doesn't take care of zeros in front of numbers.
+
 ## Custom comparator
+
 ### Internationalisation I18n
+The comparator can be ajusted to compare compare strings lexicographically, according to a specific locale.
+
+
+
+The Collator class performs locale-sensitive String comparison. You use this class to build searching and sorting routines for natural language text.
 
 ### Case insensitive
+
+The comparator can be ajusted to compare strings ignoring case difference.
+
+Note that this method does not take locale into account, and will result in an unsatisfactory ordering for certain locales. The java.text package provides collators to allow locale-sensitive ordering.
+
 
 ## Lists table order
 In my specific case, I have software version strings that I want to sort. So I want "1.2.10.5" to be considered greater than "1.2.9.1".

@@ -34,11 +34,13 @@ import java.util.regex.Pattern;
 
 public class NaturalComparator implements Comparator<String> {
 
-	final private Comparator<String> comparator;
+	final private Comparator<String> alphaComparator;
 
-	//TODO make the regex not capture the point 
-	final static String NUM_PAT = "(?:\\s)*((?:^|\\s)[-])?0*([1-9]\\d*|0)((\\.\\d++)(?!\\.\\d))?";
-	
+	// TODO make the regex not capture the point
+	// final static String NUM_PAT =
+	// "(?:\\s)*((?:^|\\s)[-])?0*([1-9]\\d*|0)((\\.\\d++)(?!\\.\\d))?";
+	final static String NUM_PAT = "\\s+|((?:(?<=^|\\s)[-])?0*(?:[1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
+
 	final static public Comparator<String> ASCII = new Comparator<String>() {
 		@Override
 		public int compare(String o1, String o2) {
@@ -47,16 +49,16 @@ public class NaturalComparator implements Comparator<String> {
 	};
 
 	public NaturalComparator() {
-		comparator = ASCII;
+		alphaComparator = ASCII;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NaturalComparator(Collator collator) {
-		this.comparator = (Comparator) collator;
+		this.alphaComparator = (Comparator) collator;
 	}
 
-	public NaturalComparator(Comparator<String> collator) {
-		this.comparator = collator;
+	public NaturalComparator(Comparator<String> alphaComparator) {
+		this.alphaComparator = alphaComparator;
 	}
 
 	final static Pattern PATTERN = Pattern.compile(NUM_PAT);
@@ -68,34 +70,54 @@ public class NaturalComparator implements Comparator<String> {
 		Matcher matcher = PATTERN.matcher(toSplit);
 
 		int start = 0;
+
+//		 int j = 0;
 		while (matcher.find()) {
+//			 System.out.println("toSplit:'" + toSplit + "'");
+//			 for (int i = 0; i < matcher.groupCount(); i++) {
+//			 System.out.println("find " + j + " Gr" + i + ":'" +
+//			 matcher.group(i) + "'");
+//			 }
+//			 j++;
+//			 System.out.println();
+
 			if (start != matcher.start()) {
 				String prev = toSplit.substring(start, matcher.start());
-				list.add(new AlphaTokenComparable(prev, comparator));
+				list.add(new AlphaTokenComparable(prev, alphaComparator));
 			}
 
-//			for (int i = 0; i < matcher.groupCount(); i++) {
-//				System.out.println("Gr" + i + ": " + matcher.group(i));
-//			}
-
-			boolean isNegative = "-".equals(matcher.group(1));
-			String number = matcher.group(2);
-			String decimal = matcher.group(3);
 			String wholeStr = matcher.group(0);
 
-			//TODO make the regex not capture the point 
-			if (decimal != null) {
-				decimal = decimal.substring(1);
+			char ch = wholeStr.charAt(0);
+
+			if (Character.isWhitespace(ch)) {
+				// we skip white spaces
+			} else {
+
+				boolean isNegative;
+				String number = matcher.group(1);
+
+				if ('-' == ch) {
+					isNegative = true;
+					// skip the '-'
+					number = number.substring(1);
+				} else {
+					isNegative = false;
+				}
+
+				
+				String decimal = matcher.group(2);
+				//TODO try to find why there is a dot at front
+				decimal = decimal == null ? null : decimal.substring(1);
+
+				list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr, alphaComparator));
 			}
-			
-			list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr, comparator));
-			
 			start = matcher.end();
 		}
 
 		if (start != toSplit.length()) {
 			String last = toSplit.substring(start, toSplit.length());
-			list.add(new AlphaTokenComparable(last, comparator));
+			list.add(new AlphaTokenComparable(last, alphaComparator));
 		}
 
 		return list;
@@ -105,6 +127,8 @@ public class NaturalComparator implements Comparator<String> {
 
 		List<TokenComparable> list1 = split(s1);
 		List<TokenComparable> list2 = split(s2);
+//		System.out.println(list1);
+//		System.out.println(list2);
 
 		int len1 = list1.size();
 		int len2 = list2.size();
@@ -123,13 +147,13 @@ public class NaturalComparator implements Comparator<String> {
 			}
 			k++;
 		}
-		
-		result =  len1 - len2;
-		
+
+		result = len1 - len2;
+
 		if (result == 0) {
 			return s1.compareTo(s2);
 		}
-		
+
 		return result;
 	}
 }

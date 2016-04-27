@@ -19,7 +19,6 @@ class NaturalComparatorTest extends Specification {
 		given:
 		NaturalComparator naturalComparator = new NaturalComparator();
 		
-		
 		def list = naturalComparator.split(first)
 		
 		def list2 = []
@@ -50,7 +49,7 @@ class NaturalComparatorTest extends Specification {
 		"20"				| ["20"]	
 		"2"					| ["2"]
 		"-20"				| ["-20"]
-		" -40"				| [" -40"]
+		" -40"				| ["-40"]
 		"-20.234"			| ["-20.234"]
 		
 		//comma or hyphen in string
@@ -65,10 +64,10 @@ class NaturalComparatorTest extends Specification {
 		"0.3000"			| ["0.3000"]
 		
 		//spaces
-		"pics 5"			| ["pics", " 5"]
-		"pics    5"			| ["pics", "    5"]
-		"pics 5 test"		| ["pics", " 5", " test"]
-		"pics    5 6"		| ["pics", "    5", " 6"]
+		"pics 5"			| ["pics", "5"]
+		"pics    5"			| ["pics", "5"]
+		"pics 5 test"		| ["pics", "5", "test"]
+		"pics    5 6"		| ["pics", "5", "6"]
 	}
 
 	def "Pure numbers" () {
@@ -106,7 +105,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 	
-	def "Pure numbers comparaizon"() {
+	def "Pure numbers comparison"() {
 		
 				given:
 				NaturalComparator naturalComparator = new NaturalComparator();
@@ -123,7 +122,9 @@ class NaturalComparatorTest extends Specification {
 				"-1.1532456"	| "-1.15"
 				"123"			| "1234"
 				"-1.1532456"	| "-1"
-				
+				"-123"			| "-0.1"
+				"-123"			| "-1.1"
+				"-0.99"			| "-0.15"
 			}
 	
 	
@@ -342,6 +343,9 @@ class NaturalComparatorTest extends Specification {
 		Collections.sort(list, naturalComparator)
 
 		then: "The list are equal"
+		println "Sorted:   " + list
+		println "Expected: " + expected
+		
 		list == expected
 	}
 
@@ -435,18 +439,19 @@ class NaturalComparatorTest extends Specification {
 		where:
 
 		first 			| second 		| comparison
-		"doc20.doc" 	| "doc10.doc" 	| GREATER
-		"doc10.doc"		| "doc20.doc" 	| LESS
-		"doc2.doc"		| "doc10.doc" 	| LESS
-		"doc2.1.doc"	| "doc2.2.doc"	| LESS
-		"doc2.10.doc"	| "doc2.2.doc"	| LESS
-		"20"			| "10"			| GREATER
-		"2"				| "10"			| LESS
-		"-20"			| "10"			| LESS
-		"-20"			| "-10"			| LESS
-		"pic05"			| "pic 5"		| GREATER
-		"pic02000"		| "pic2"		| GREATER
-		"1-2"			| "1-02"		| LESS
+//		"doc20.doc" 	| "doc10.doc" 	| GREATER
+//		"doc10.doc"		| "doc20.doc" 	| LESS
+//		"doc2.doc"		| "doc10.doc" 	| LESS
+//		"doc2.1.doc"	| "doc2.2.doc"	| LESS
+//		"doc2.10.doc"	| "doc2.2.doc"	| LESS
+//		"20"			| "10"			| GREATER
+//		"2"				| "10"			| LESS
+//		"-20"			| "10"			| LESS
+//		"-20"			| "-10"			| LESS
+//		"pic05"			| "pic 5"		| GREATER
+//		"pic02000"		| "pic2"		| GREATER
+//		"1-2"			| "1-02"		| LESS
+		"Allegia 50 Clasteron" | "Allegia 50B Clasteron" | LESS
 	}
 	
 	def "Mutiple cases2"() {
@@ -470,11 +475,8 @@ class NaturalComparatorTest extends Specification {
 	}
 	
 	def "Mutiple cases3"() {
-
-
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
-
+		
 		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
 		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, NaturalComparator.ASCII);
 
@@ -491,5 +493,28 @@ class NaturalComparatorTest extends Specification {
 		"-10.12"	| "10.123"
 		"-10.123"	| "-10.12"
 		"-10.123"	| "10.12"
+	}
+	
+	
+	def "Mutiple white space"() {
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator();
+
+
+		expect:
+
+		naturalComparator.compare(smaller, bigger) == 0
+
+		where:
+
+		smaller		|	bigger
+		"   10"		| "      10"
+		"10"		| "      10"
+		"10    "	| "-10"
+		"   -10"	| "      -10"
+		"-10"		| "      -10"
+		"-10    "	| "-10"
+		"   -10  "	| "      -10\t\t"
+		"   -10.3 "	| "      -10.4345\t\t"
 	}
 }

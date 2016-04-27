@@ -10,8 +10,8 @@ public class NumberTokenComparable extends TokenComparable {
 	private final String decimal;
 	private final String str;
 
-	NumberTokenComparable(String str, Comparator<String> comparator) {
-		super(comparator);
+	NumberTokenComparable(String str, Comparator<String> alphaComparator) {
+		super(alphaComparator);
 		this.str = str;
 
 		int len = str.length();
@@ -87,7 +87,7 @@ public class NumberTokenComparable extends TokenComparable {
 				return -1;
 			}
 
-			return -1 * comapreNum(units, otherNTC.units, otherNTC);
+			return -comapreNum(units, otherNTC.units, otherNTC);
 		} else {
 			if (other.isNegative()) {
 				return 1;
@@ -156,17 +156,17 @@ public class NumberTokenComparable extends TokenComparable {
 		int len2 = s2.length();
 
 		// clean tailling zeros
-		for (; len1 >= 0; len1--) {
-			if (s1.charAt(len1 - 1) != '0') {
-				break;
-			}
-		}
-
-		for (; len2 >= 0; len2--) {
-			if (s2.charAt(len2 - 1) != '0') {
-				break;
-			}
-		}
+//		for (; len1 >= 0; len1--) {
+//			if (s1.charAt(len1 - 1) != '0') {
+//				break;
+//			}
+//		}
+//
+//		for (; len2 >= 0; len2--) {
+//			if (s2.charAt(len2 - 1) != '0') {
+//				break;
+//			}
+//		}
 
 		int lim = Math.min(len1, len2);
 

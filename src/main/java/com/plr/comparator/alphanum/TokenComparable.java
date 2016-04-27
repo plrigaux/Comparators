@@ -4,7 +4,6 @@ import java.util.Comparator;
 
 abstract public class TokenComparable implements Comparable<TokenComparable> {
 
-
 	final Comparator<String> comparator;
 
 	TokenComparable( Comparator<String> comparator) {
