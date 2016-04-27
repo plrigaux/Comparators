@@ -36,7 +36,7 @@ a standard sort, this algorithm sorts numbers in numeric order.
      z6.doc<br>    
      z2.doc<br>
      z12.doc<br>
-     
+     </td>
      <td>
      z101.doc<br>     
      z4.doc<br>
@@ -57,6 +57,14 @@ a standard sort, this algorithm sorts numbers in numeric order.
 
 
 ## Negative numbers
+
+The comparator takes case of strings representing negative numbers. Which means that it considers that "-10" is smaller than "-1".
+
+It is consider a negative number if the string starts with an hyphen ('-') or there is a whitespace before the hyphen. 
+
+Negative: "-456", " -43", "test  -467"
+
+Not negative: "Something-45" 
 
 ## Space insensitive
 

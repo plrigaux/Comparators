@@ -201,6 +201,56 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
+	def "test sort list ignore case" () {
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator(String.CASE_INSENSITIVE_ORDER);
+
+		def expected = [
+			"zo1.doc",
+			"Zo2.doc",
+			"Zo3.doc",
+			"zo4.doc",
+			"Zo5.doc",
+			"zo6.doc",
+			"zo7.doc",
+			"zo8.doc",
+			"Zo9.doc",
+			"zO10.doc",
+			"zo11.doc",
+			"zo12.doc",
+			"Zo13.doc",
+			"zo14.doc",
+			"zo15.doc",
+			"zO16.doc",
+			"zo17.doc",
+			"Zo18.doc",
+			"zo19.doc",
+			"ZO20.doc",
+			"Zo100.doc",
+			"zo101.doc",
+			"Zo102.doc",
+		]
+		
+		def list = []
+
+		list.addAll(expected)
+
+		Collections.shuffle(list)
+
+		when: "Do nothing"
+
+		then: "The list aren't equal"
+		list != expected
+
+		when: "Sorting list"
+		
+		//println list
+		Collections.sort(list, naturalComparator)
+		//println list
+		
+		then: "The list are equal"
+		list == expected
+	}
 
 	def "product names sort"() {
 		given:
@@ -425,22 +475,6 @@ class NaturalComparatorTest extends Specification {
 		given:
 		NaturalComparator naturalComparator = new NaturalComparator();
 
-		//			def s1 = "Alpha 2A-8000"
-		//			def s2 = "Alpha 2A-900"
-
-		def s1 = "1-2"
-		def s2 = "1-02"
-
-		int val = naturalComparator.compare(s1, s2);
-
-		println "The val: $val"
-
-		println "s1: " + naturalComparator.split(s1)
-
-		println "s2: " +  naturalComparator.split(s2)
-
-
-
 		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
 		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, NaturalComparator.ASCII);
 
@@ -448,7 +482,6 @@ class NaturalComparatorTest extends Specification {
 
 		nt1.compareTo(nt2) < 0
 		nt2.compareTo(nt1) > 0
-
 
 		where:
 

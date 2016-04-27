@@ -1,4 +1,10 @@
+# -----
+# Specific
+
+*.md.html
+
 # Gradle
+#
 # ------
 .gradle
 /build
