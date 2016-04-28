@@ -18,6 +18,12 @@ jar {
 repositories { mavenCentral() }
 
 dependencies {
+	
+	compile 'org.slf4j:slf4j-api:1.7.+'
+	//compile 'org.slf4j:slf4j-simple:1.7.+'
+	compile 'ch.qos.logback:logback-classic:1.1.+'
+	
+
 	testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
 	
 	// We use the latest groovy 2.x version for Spock testing

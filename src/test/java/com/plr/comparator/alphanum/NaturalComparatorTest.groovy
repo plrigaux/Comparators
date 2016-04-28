@@ -125,6 +125,7 @@ class NaturalComparatorTest extends Specification {
 				"-123"			| "-0.1"
 				"-123"			| "-1.1"
 				"-0.99"			| "-0.15"
+				"-1.1532456"	| "-0.99"
 			}
 	
 	
@@ -346,6 +347,14 @@ class NaturalComparatorTest extends Specification {
 		println "Sorted:   " + list
 		println "Expected: " + expected
 		
+		
+		
+		list.eachWithIndex { item, index ->
+			def exp =  expected[index]
+			boolean b = item == exp
+			println "$b $index '$item' ----- $exp"
+		}
+		
 		list == expected
 	}
 
@@ -406,8 +415,10 @@ class NaturalComparatorTest extends Specification {
 		println "Sorted:   " + list
 		println "Expected: " + expected
 		
-		for(int i = 0; i < list.size(); i++) {
-			list[i] == expected[i]
+		list.eachWithIndex { item, index ->
+			def exp =  expected[index]
+			boolean b = item == exp
+			println "$b $index '$item' ----- $exp"
 		}
 		
 		list == expected
@@ -439,19 +450,22 @@ class NaturalComparatorTest extends Specification {
 		where:
 
 		first 			| second 		| comparison
-//		"doc20.doc" 	| "doc10.doc" 	| GREATER
-//		"doc10.doc"		| "doc20.doc" 	| LESS
-//		"doc2.doc"		| "doc10.doc" 	| LESS
-//		"doc2.1.doc"	| "doc2.2.doc"	| LESS
-//		"doc2.10.doc"	| "doc2.2.doc"	| LESS
-//		"20"			| "10"			| GREATER
-//		"2"				| "10"			| LESS
-//		"-20"			| "10"			| LESS
-//		"-20"			| "-10"			| LESS
-//		"pic05"			| "pic 5"		| GREATER
-//		"pic02000"		| "pic2"		| GREATER
-//		"1-2"			| "1-02"		| LESS
-		"Allegia 50 Clasteron" | "Allegia 50B Clasteron" | LESS
+		"doc20.doc" 	| "doc10.doc" 	| GREATER
+		"doc10.doc"		| "doc20.doc" 	| LESS
+		"doc2.doc"		| "doc10.doc" 	| LESS
+		"doc2.1.doc"	| "doc2.2.doc"	| LESS
+		"doc2.10.doc"	| "doc2.2.doc"	| LESS
+		"20"			| "10"			| GREATER
+		"2"				| "10"			| LESS
+		"-20"			| "10"			| LESS
+		"-20"			| "-10"			| LESS
+		"pic05"			| "pic 5"		| GREATER
+		"pic02000"		| "pic2"		| GREATER
+		"1-2"			| "1-02"		| LESS
+		"Allegia 50 Clasteron" 			| "Allegia 50B Clasteron" | LESS
+		"z02.doc" 		| "z1.doc" 		| GREATER
+		"pic01" 		| "pic2" 			| LESS
+		"pic05"			| "pic 5 something"	| LESS
 	}
 	
 	def "Mutiple cases2"() {

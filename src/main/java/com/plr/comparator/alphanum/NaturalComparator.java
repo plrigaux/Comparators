@@ -32,14 +32,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NaturalComparator implements Comparator<String> {
+
+	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
 	final private Comparator<String> alphaComparator;
 
 	// TODO make the regex not capture the point
 	// final static String NUM_PAT =
 	// "(?:\\s)*((?:^|\\s)[-])?0*([1-9]\\d*|0)((\\.\\d++)(?!\\.\\d))?";
-	final static String NUM_PAT = "\\s+|((?:(?<=^|\\s)[-])?0*(?:[1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
+	final static String NUM_PAT = "\\s+|(?:(?:(?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
 
 	final static public Comparator<String> ASCII = new Comparator<String>() {
 		@Override
@@ -71,15 +76,17 @@ public class NaturalComparator implements Comparator<String> {
 
 		int start = 0;
 
-//		 int j = 0;
+		int j = 0;
 		while (matcher.find()) {
-//			 System.out.println("toSplit:'" + toSplit + "'");
-//			 for (int i = 0; i < matcher.groupCount(); i++) {
-//			 System.out.println("find " + j + " Gr" + i + ":'" +
-//			 matcher.group(i) + "'");
-//			 }
-//			 j++;
-//			 System.out.println();
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("toSplit:'{}'", toSplit);
+				for (int i = 0; i < matcher.groupCount(); i++) {
+					logger.debug("find {} Gr{}: '{}'", j, i, matcher.group(i));
+				}
+				j++;
+				logger.debug("");
+			}
 
 			if (start != matcher.start()) {
 				String prev = toSplit.substring(start, matcher.start());
@@ -99,15 +106,12 @@ public class NaturalComparator implements Comparator<String> {
 
 				if ('-' == ch) {
 					isNegative = true;
-					// skip the '-'
-					number = number.substring(1);
 				} else {
 					isNegative = false;
 				}
 
-				
 				String decimal = matcher.group(2);
-				//TODO try to find why there is a dot at front
+				// TODO try to find why there is a dot at front
 				decimal = decimal == null ? null : decimal.substring(1);
 
 				list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr, alphaComparator));
@@ -127,8 +131,8 @@ public class NaturalComparator implements Comparator<String> {
 
 		List<TokenComparable> list1 = split(s1);
 		List<TokenComparable> list2 = split(s2);
-//		System.out.println(list1);
-//		System.out.println(list2);
+		// System.out.println(list1);
+		// System.out.println(list2);
 
 		int len1 = list1.size();
 		int len2 = list2.size();
