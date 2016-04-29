@@ -49,7 +49,7 @@ class NaturalComparatorTest extends Specification {
 		"20"				| ["20"]	
 		"2"					| ["2"]
 		"-20"				| ["-20"]
-		" -40"				| ["-40"]
+		" -40"				| [" -40"]
 		"-20.234"			| ["-20.234"]
 		
 		//comma or hyphen in string
@@ -64,16 +64,18 @@ class NaturalComparatorTest extends Specification {
 		"0.3000"			| ["0.3000"]
 		
 		//spaces
-		"pics 5"			| ["pics", "5"]
-		"pics    5"			| ["pics", "5"]
-		"pics 5 test"		| ["pics", "5", "test"]
-		"pics    5 6"		| ["pics", "5", "6"]
+		"pics 5"			| ["pics", " 5"]
+		"pics    5"			| ["pics", "    5"]
+		"pics 5 test"		| ["pics", " 5", " test"]
+		"pics    5 6"		| ["pics", "    5", " 6"]
+		"pics    5 6 "		| ["pics", "    5", " 6", " "]
 	}
 
 	def "Pure numbers" () {
 		given:
 		NaturalComparator naturalComparator = new NaturalComparator();
-		
+		Comparator<String> comp = naturalComparator.reversed();
+		comp.reversed();
 		def expected = ["-123", "-12",
 			"-1.1532456", "-1.15", "-1.1" , "-1", "-0.99999999999", "-0.99",
 			"-0.15", "-0.1",  "0", "0.1", "0.15", "1",  "1.1", "1.15",
@@ -449,23 +451,28 @@ class NaturalComparatorTest extends Specification {
 
 		where:
 
-		first 			| second 		| comparison
-		"doc20.doc" 	| "doc10.doc" 	| GREATER
-		"doc10.doc"		| "doc20.doc" 	| LESS
-		"doc2.doc"		| "doc10.doc" 	| LESS
-		"doc2.1.doc"	| "doc2.2.doc"	| LESS
-		"doc2.10.doc"	| "doc2.2.doc"	| LESS
-		"20"			| "10"			| GREATER
-		"2"				| "10"			| LESS
-		"-20"			| "10"			| LESS
-		"-20"			| "-10"			| LESS
-		"pic05"			| "pic 5"		| GREATER
-		"pic02000"		| "pic2"		| GREATER
-		"1-2"			| "1-02"		| LESS
-		"Allegia 50 Clasteron" 			| "Allegia 50B Clasteron" | LESS
-		"z02.doc" 		| "z1.doc" 		| GREATER
-		"pic01" 		| "pic2" 			| LESS
-		"pic05"			| "pic 5 something"	| LESS
+		first 					| second 					| comparison
+		"doc20.doc" 			| "doc10.doc" 				| GREATER
+		"doc10.doc"				| "doc20.doc" 				| LESS
+		"doc2.doc"				| "doc10.doc" 				| LESS
+		"doc2.1.doc"			| "doc2.2.doc"				| LESS
+		"doc2.10.doc"			| "doc2.2.doc"				| LESS
+		"20"					| "10"						| GREATER
+		"2"						| "10"						| LESS
+		"-20"					| "10"						| LESS
+		"-20"					| "-10"						| LESS
+		"pic05"					| "pic 5"					| GREATER
+		"pic02000"				| "pic2"					| GREATER
+		"1-2"					| "1-02"					| LESS
+
+		"z02.doc" 				| "z1.doc" 					| GREATER
+		"pic01" 				| "pic2" 					| LESS
+		"pic05"					| "pic 5 something"			| LESS
+		"1-2"					| "1-02"					| LESS
+		"1-2 Pizza"				| "1-02"					| GREATER
+		//TODO introduce quasi number concept
+		"Allegia 50 Clasteron" 	| "Allegia 50B Clasteron" 	| LESS
+		"1-2 Pizza"				| "1- 2"					| GREATER
 	}
 	
 	def "Mutiple cases2"() {
@@ -512,7 +519,7 @@ class NaturalComparatorTest extends Specification {
 	
 	def "Mutiple white space"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = new NaturalComparator(NaturalComparator.Flags.SPACE);
 
 
 		expect:
@@ -524,11 +531,12 @@ class NaturalComparatorTest extends Specification {
 		smaller		|	bigger
 		"   10"		| "      10"
 		"10"		| "      10"
-		"10    "	| "-10"
 		"   -10"	| "      -10"
 		"-10"		| "      -10"
 		"-10    "	| "-10"
 		"   -10  "	| "      -10\t\t"
-		"   -10.3 "	| "      -10.4345\t\t"
+		"   -10.3"	| "      -10.3\t"
+		"   -10.3"	| "      -10.3 "
+		"   -10.3"	| "      -10.3\t   "
 	}
 }

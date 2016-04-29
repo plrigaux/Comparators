@@ -11,13 +11,18 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 	}
 
 	@Override
-	public int compareTo(TokenComparable o) {
-		return comparator.compare(getStr(), o.getStr());
+	public int compareTo(TokenComparable other) {
+	
+		if (isAllWhiteSpace() && other.isAllWhiteSpace()) {
+			return 0;
+		}
+		
+		return comparator.compare(getStr(), other.getStr());
 	}
 
 	@Override
 	public String toString() {
-		return getStr().toString() + "(num? " + isNumber() + ")";
+		return (isNumber() ? "N>" : "A>") +getStr().toString();
 	}
 
 	public abstract String getStr();
@@ -25,6 +30,14 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 	abstract boolean isNumber();
 
 	boolean isNegative() {
+		return false;
+	}
+
+	public int compareLeadingZerosTo(TokenComparable other) {
+		return compareTo(other);
+	}
+
+	public boolean isAllWhiteSpace() {
 		return false;
 	}
 }

@@ -119,19 +119,29 @@ public class NumberTokenComparable extends TokenComparable {
 
 			result = comapreDecimals(other);
 
-//			if (result != 0) {
+			if (result != 0) {
 				return result;
-//			}
-			
-			//The one that have less leading zeros or space is the smallest
-//			String otherStr = other.str;
-//			
-//			len1 = str.length();
-//			len2 = otherStr.length();
-//			
-//			result = len1 - len2;
+			}
 		}
 
+		return result;
+	}
+	
+	//The one that have less leading zeros or space is the smallest
+	@Override
+	public int compareLeadingZerosTo(TokenComparable other) {
+		if (!other.isNumber()) {
+			return super.compareTo(other);
+		}
+		
+		String thisStr = this.getStr();
+		String otherStr = other.getStr();
+		
+		int len1 = thisStr.length();
+		int len2 = otherStr.length();
+		
+		int result = len1 - len2;
+		
 		return result;
 	}
 

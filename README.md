@@ -105,6 +105,15 @@ Sometimes they accept and skip whitespace, skip leading zeros and most important
 
 https://github.com/paour/natorder
 
+## Reverse order
+If you want to sort in the reverse order you just have to call the  reverse() method. It leaverage the Java&nbsp;8 utility method.
+
+```java
+NaturalComparator naturalComparator = new NaturalComparator();
+
+Comparator<String> comparator = naturalComparator.reverse();
+
+```
 
 ## Diclaimer
 This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
