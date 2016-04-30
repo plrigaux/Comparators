@@ -34,7 +34,8 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 	}
 
 	public int compareLeadingZerosTo(TokenComparable other) {
-		return compareTo(other);
+		// if this method is called, it means that is was already equals 
+		return 0;
 	}
 
 	public boolean isAllWhiteSpace() {

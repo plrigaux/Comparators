@@ -6,8 +6,9 @@ package com.plr.comparator.alphanum
  * @author plr, @date 4/23/16 9:04 PM
  */
 
-import spock.lang.Specification
 import static com.plr.comparator.alphanum.CompType.*
+import spock.lang.Specification
+import static com.plr.comparator.alphanum.NaturalComparator.Flags.*
 
 class NaturalComparatorTest extends Specification {
 
@@ -495,7 +496,7 @@ class NaturalComparatorTest extends Specification {
 
 	}
 	
-	def "Mutiple cases3"() {
+	def "Mutiple cases Numbers"() {
 		given:
 		
 		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
@@ -519,7 +520,7 @@ class NaturalComparatorTest extends Specification {
 	
 	def "Mutiple white space"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(NaturalComparator.Flags.SPACE);
+		NaturalComparator naturalComparator = new NaturalComparator(PRIMARY);
 
 
 		expect:
@@ -538,5 +539,8 @@ class NaturalComparatorTest extends Specification {
 		"   -10.3"	| "      -10.3\t"
 		"   -10.3"	| "      -10.3 "
 		"   -10.3"	| "      -10.3\t   "
+		"-10.30"	| "-10.3"
+		"-10.30"	| "-10.3 "
+		"10.300 "	| "10.3"
 	}
 }

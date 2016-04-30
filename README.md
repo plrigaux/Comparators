@@ -70,6 +70,12 @@ Not negative: "Something-45"
 
 The comparator doesn't take care of white spaces in front of numbers.
 
+all leading and trailing whitespace of both the expectedString and the examined string are ignored
+any remaining whitespace, appearing within either string, is collapsed to a single space before comparison
+For example:
+
+assertThat("   my\tfoo  bar ", equalToIgnoringWhiteSpace(" my  foo bar"))
+
 ## Heading zeros incensitive
 The comparator doesn't take care of zeros in front of numbers.
 

@@ -37,6 +37,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.plr.comparator.alphanum.NaturalComparator.Flags.*;
+
 public class NaturalComparator implements Comparator<String> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
@@ -61,7 +63,7 @@ public class NaturalComparator implements Comparator<String> {
 	};
 
 	public enum Flags {
-		SPACE
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2
 	};
 
 	public NaturalComparator(Flags... flags) {
@@ -78,24 +80,35 @@ public class NaturalComparator implements Comparator<String> {
 
 	final private Pattern pattern;
 
+	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
+
 	public NaturalComparator(Comparator<String> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
-		EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
 		flagSet.addAll(Arrays.asList(flags));
 
-		pureNumbers = flagSet.contains(Flags.SPACE);
+		pureNumbers = flagSet.contains(Flags.PRIMARY);
 
 		pattern = Pattern.compile(NUM_PAT);
 	}
+
+	private Pattern spaceInsensitvePat = Pattern.compile("\\s+");
 
 	List<TokenComparable> split(String toSplit) {
 
 		List<TokenComparable> list = new ArrayList<>();
 
+		if (flagSet.contains(SPACE_INSENSITVE)) {
+			spaceInsensitvePat.matcher(toSplit).replaceAll("");
+		} else if (flagSet.contains(SPACE_INSENSITVE2)) {
+			spaceInsensitvePat.matcher(toSplit).replaceAll(" ");
+		}
+
 		Matcher matcher = pattern.matcher(toSplit);
 
-		int start = 0;
+		trim(toSplit, matcher);
+
+		int start = matcher.regionStart();
 
 		int j = 0;
 		while (matcher.find()) {
@@ -118,7 +131,7 @@ public class NaturalComparator implements Comparator<String> {
 
 			String number = matcher.group(2);
 
-			
+			// TODO remove the group for neg
 			boolean isNegative = matcher.group(1) != null;
 
 			String decimal = matcher.group(3);
@@ -130,12 +143,31 @@ public class NaturalComparator implements Comparator<String> {
 			start = matcher.end();
 		}
 
-		if (start != toSplit.length()) {
-			String last = toSplit.substring(start, toSplit.length());
+		if (start != matcher.regionEnd()) {
+			String last = toSplit.substring(start, matcher.regionEnd());
 			list.add(new AlphaTokenComparable(last, alphaComparator));
 		}
 
 		return list;
+	}
+
+	private void trim(String toSplit, Matcher matcher) {
+		int rstrat = 0;
+		if (flagSet.contains(TRIM) || flagSet.contains(LTRIM)) {
+			while (rstrat < toSplit.length() && Character.isWhitespace(toSplit.charAt(rstrat))) {
+				rstrat++;
+			}
+
+		}
+
+		int rend = toSplit.length() - 1;
+		if (flagSet.contains(TRIM) || flagSet.contains(RTRIM)) {
+			while (rend >= 0 && Character.isWhitespace(toSplit.charAt(rend))) {
+				rend--;
+			}
+		}
+
+		matcher.region(rstrat, rend + 1);
 	}
 
 	public int compare(String s1, String s2) {
@@ -184,7 +216,7 @@ public class NaturalComparator implements Comparator<String> {
 
 			boolean isAllWhiteSpace = ss.isAllWhiteSpace();
 
-			//means that is tailing white space
+			// means that is tailing white space
 			if (isAllWhiteSpace && limMax == (k + 1)) {
 				result = 0;
 			}
@@ -193,6 +225,7 @@ public class NaturalComparator implements Comparator<String> {
 		if (result != 0) {
 			return result;
 		}
+
 		// For now equals, now compare leading zeros
 		if (!pureNumbers) {
 			k = 0;
@@ -209,7 +242,21 @@ public class NaturalComparator implements Comparator<String> {
 			}
 
 			if (result == 0) {
-				result = s1.compareTo(s2);
+				String st1 = s1;
+				String st2 = s2;
+
+				if (flagSet.contains(Flags.TRIM)) {
+					st1 = st1.trim();
+					st2 = st2.trim();
+				} else if (flagSet.contains(Flags.LTRIM)) {
+					st1 = ltrim(s1);
+					st2 = ltrim(s2);
+				} else if (flagSet.contains(Flags.TRIM)) {
+					st1 = rtrim(s1);
+					st2 = rtrim(s2);
+				}
+
+				result = st1.compareTo(st2);
 			}
 		}
 
@@ -219,6 +266,22 @@ public class NaturalComparator implements Comparator<String> {
 
 	public boolean equals(String s1, String s2) {
 		return compare(s1, s2) == 0;
+	}
+
+	private static String ltrim(String s) {
+		int i = 0;
+		while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
+			i++;
+		}
+		return s.substring(i);
+	}
+
+	private static String rtrim(String s) {
+		int i = s.length() - 1;
+		while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
+			i--;
+		}
+		return s.substring(0, i + 1);
 	}
 
 }
