@@ -25,7 +25,7 @@ class NaturalComparatorTest extends Specification {
 		def list2 = []
 		
 		list.each { token ->
-			list2 << token.getStr()
+			list2 << token.getStr().toString();
 		}
 
 		println "$first -> $list"

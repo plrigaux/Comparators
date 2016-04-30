@@ -4,9 +4,9 @@ import java.util.Comparator;
 
 public class AlphaTokenComparable extends TokenComparable {
 
-	private final String str;
+	private final CharSequence str;
 
-	AlphaTokenComparable(String str, Comparator<String> comparator) {
+	AlphaTokenComparable(CharSequence str, Comparator<CharSequence> comparator) {
 		super(comparator);
 		this.str = str;
 	}
@@ -17,12 +17,12 @@ public class AlphaTokenComparable extends TokenComparable {
 	}
 
 	@Override
-	public String getStr() {
+	public CharSequence getStr() {
 		return str;
 	}
 
 	@Override
 	public boolean isAllWhiteSpace() {
-		return str.trim().length() == 0;
+		return str.toString().trim().length() == 0;
 	}
 }

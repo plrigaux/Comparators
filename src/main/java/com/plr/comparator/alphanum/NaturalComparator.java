@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
 
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.*;
 
-public class NaturalComparator implements Comparator<String> {
+public class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
-	final private Comparator<String> alphaComparator;
+	final private Comparator<CharSequence> alphaComparator;
 
 	// TODO make the regex not capture the point
 	// final static String NUM_PAT =
@@ -55,10 +55,29 @@ public class NaturalComparator implements Comparator<String> {
 
 	final static String NUM_PAT = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
 
-	final static public Comparator<String> ASCII = new Comparator<String>() {
+	final static public Comparator<CharSequence> ASCII = new Comparator<CharSequence>() {
 		@Override
-		public int compare(String o1, String o2) {
-			return o1.compareTo(o2);
+		public int compare(CharSequence o1, CharSequence o2) {
+
+			int len1 = o1.length();
+			int len2 = o2.length();
+			int lim = Math.min(len1, len2);
+
+			int k = 0;
+			int result = 0;
+			while (k < lim) {
+				char ss1 = o1.charAt(k);
+				char ss2 = o2.charAt(k);
+
+				result = ss1 - ss2;
+
+				if (result != 0) {
+					return result;
+				}
+				k++;
+			}
+
+			return result;
 		}
 	};
 
@@ -82,7 +101,7 @@ public class NaturalComparator implements Comparator<String> {
 
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
 
-	public NaturalComparator(Comparator<String> alphaComparator, Flags... flags) {
+	public NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
 		flagSet.addAll(Arrays.asList(flags));
@@ -92,16 +111,14 @@ public class NaturalComparator implements Comparator<String> {
 		pattern = Pattern.compile(NUM_PAT);
 	}
 
-	private Pattern spaceInsensitvePat = Pattern.compile("\\s+");
-
-	List<TokenComparable> split(String toSplit) {
+	List<TokenComparable> split(CharSequence toSplit) {
 
 		List<TokenComparable> list = new ArrayList<>();
 
 		if (flagSet.contains(SPACE_INSENSITVE)) {
-			spaceInsensitvePat.matcher(toSplit).replaceAll("");
+			toSplit = spaceInsensible(toSplit);
 		} else if (flagSet.contains(SPACE_INSENSITVE2)) {
-			spaceInsensitvePat.matcher(toSplit).replaceAll(" ");
+			toSplit = spaceInsensible2(toSplit);
 		}
 
 		Matcher matcher = pattern.matcher(toSplit);
@@ -123,54 +140,98 @@ public class NaturalComparator implements Comparator<String> {
 			}
 
 			if (start != matcher.start()) {
-				String prev = toSplit.substring(start, matcher.start());
+//				CharSequence prev = toSplit.subSequence(start, matcher.start());
+				CharSequence prev = new StringBuilderSpecial2(toSplit, start, matcher.start());
 				list.add(new AlphaTokenComparable(prev, alphaComparator));
 			}
 
-			String wholeStr = matcher.group(0);
+			CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
+			
 
-			String number = matcher.group(2);
-
+			CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(2), matcher.end(2));
+			
 			// TODO remove the group for neg
 			boolean isNegative = matcher.group(1) != null;
 
-			String decimal = matcher.group(3);
-			// TODO try to find why there is a dot at front
-			decimal = decimal == null ? null : decimal.substring(1);
-
+			// TODO try to find why there is a dot at front (+1)
+			CharSequence decimal = null;
+			
+			int end3 = matcher.end(3);
+			if (end3 >= 0) {
+				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
+			}
+			
 			list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr, alphaComparator));
 
 			start = matcher.end();
 		}
 
 		if (start != matcher.regionEnd()) {
-			String last = toSplit.substring(start, matcher.regionEnd());
+			CharSequence last = toSplit.subSequence(start, matcher.regionEnd());
 			list.add(new AlphaTokenComparable(last, alphaComparator));
 		}
 
 		return list;
 	}
 
-	private void trim(String toSplit, Matcher matcher) {
-		int rstrat = 0;
-		if (flagSet.contains(TRIM) || flagSet.contains(LTRIM)) {
-			while (rstrat < toSplit.length() && Character.isWhitespace(toSplit.charAt(rstrat))) {
-				rstrat++;
+	private CharSequence spaceInsensible(CharSequence toSplit) {
+		int l = toSplit.length();
+		StringBuilderSpecial sb = new StringBuilderSpecial(l);
+		int i = 0;
+
+		while (i < l) {
+			char ch = toSplit.charAt(i);
+			if (!Character.isWhitespace(ch)) {
+				sb.append(ch);
 			}
-
+			i++;
 		}
-
-		int rend = toSplit.length() - 1;
-		if (flagSet.contains(TRIM) || flagSet.contains(RTRIM)) {
-			while (rend >= 0 && Character.isWhitespace(toSplit.charAt(rend))) {
-				rend--;
-			}
-		}
-
-		matcher.region(rstrat, rend + 1);
+		toSplit = sb;
+		return toSplit;
 	}
 
-	public int compare(String s1, String s2) {
+	private CharSequence spaceInsensible2(CharSequence toSplit) {
+		int l = toSplit.length();
+
+		l = _rtrim(toSplit);
+
+		StringBuilderSpecial sb = new StringBuilderSpecial(l);
+
+		int i = _rtrim(toSplit);
+
+		boolean isWhitespace = true;
+		boolean wasWhitespace = false;
+		while (i < l) {
+			char ch = toSplit.charAt(i);
+
+			isWhitespace = Character.isWhitespace(ch);
+			if (!isWhitespace) {
+				sb.append(ch);
+			} else if (!wasWhitespace) {
+				sb.append(' ');
+			}
+			wasWhitespace = isWhitespace;
+			i++;
+		}
+		toSplit = sb;
+		return toSplit;
+	}
+
+	private void trim(CharSequence toSplit, Matcher matcher) {
+		int rstrat = 0;
+		if (flagSet.contains(TRIM) || flagSet.contains(LTRIM)) {
+			rstrat = _ltrim(toSplit);
+		}
+
+		int rend = toSplit.length();
+		if (flagSet.contains(TRIM) || flagSet.contains(RTRIM)) {
+			rend = _rtrim(toSplit);
+		}
+
+		matcher.region(rstrat, rend);
+	}
+
+	public int compare(CharSequence s1, CharSequence s2) {
 
 		List<TokenComparable> list1 = split(s1);
 		List<TokenComparable> list2 = split(s2);
@@ -242,12 +303,12 @@ public class NaturalComparator implements Comparator<String> {
 			}
 
 			if (result == 0) {
-				String st1 = s1;
-				String st2 = s2;
+				CharSequence st1 = s1;
+				CharSequence st2 = s2;
 
 				if (flagSet.contains(Flags.TRIM)) {
-					st1 = st1.trim();
-					st2 = st2.trim();
+					st1 = trim(s1);
+					st2 = trim(s1);
 				} else if (flagSet.contains(Flags.LTRIM)) {
 					st1 = ltrim(s1);
 					st2 = ltrim(s2);
@@ -256,7 +317,7 @@ public class NaturalComparator implements Comparator<String> {
 					st2 = rtrim(s2);
 				}
 
-				result = st1.compareTo(st2);
+				result = ASCII.compare(st1, st2);
 			}
 		}
 
@@ -268,20 +329,38 @@ public class NaturalComparator implements Comparator<String> {
 		return compare(s1, s2) == 0;
 	}
 
-	private static String ltrim(String s) {
+	private static CharSequence ltrim(CharSequence s) {
+		int i = _ltrim(s);
+		return s.subSequence(i, -1);
+	}
+
+	private static CharSequence rtrim(CharSequence s) {
+		int i = _rtrim(s);
+		return s.subSequence(0, i + 1);
+	}
+
+	private static CharSequence trim(CharSequence s) {
+		int i = _ltrim(s);
+
+		int j = _rtrim(s);
+
+		return s.subSequence(i, j);
+	}
+
+	private static int _ltrim(CharSequence s) {
 		int i = 0;
 		while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
 			i++;
 		}
-		return s.substring(i);
+		return i;
 	}
 
-	private static String rtrim(String s) {
+	private static int _rtrim(CharSequence s) {
 		int i = s.length() - 1;
 		while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
 			i--;
 		}
-		return s.substring(0, i + 1);
+		return i + 1;
 	}
 
 }

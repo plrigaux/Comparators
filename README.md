@@ -55,8 +55,22 @@ a standard sort, this algorithm sorts numbers in numeric order.
 2. Space insensitive
 1. Switch betwwen collator
 
+## Numbers
 
-## Negative numbers
+The compatator compares numbers in the natural form order. Basically the order that we learnt at school.
+
+```
+
+ 0 < 1 < 3 < 10 < 23 < 134 < 123454634563472345345653456347
+  
+```
+
+Unlike some one liner scripts, the compator doesn't transform the numeric string into a numeric value. This have 2 benefits:
+
+* Allows numbers beyong the limits of the language native num type
+* Increases calculation performance 
+
+### Negative numbers
 
 The comparator takes case of strings representing negative numbers. Which means that it considers that "-10" is smaller than "-1".
 
@@ -65,6 +79,21 @@ It is consider a negative number if the string starts with an hyphen ('-') or th
 Negative: "-456", " -43", "test  -467"
 
 Not negative: "Something-45" 
+
+### Decimal numbers
+
+The comparator takes also care of the decimal part of the number. Honestly, I don't know in real life when it can be usefull never the less for sake of consistency I decide to include this feature.
+
+```
+
+ 0 < 1 < 3 < 10 < 23 < 134 < 123454634563472345345653456347
+ 
+ 
+```
+
+### Leading and tailing zeros
+
+As you know the leading and tailing zeros have no numerical significance, but it may have an aestetic one. The comparator will ignore leading and tailing zeros if mode ASDF chosssen.
 
 ## Space insensitive
 
@@ -120,6 +149,18 @@ NaturalComparator naturalComparator = new NaturalComparator();
 Comparator<String> comparator = naturalComparator.reverse();
 
 ```
+
+# Summary
+
+<table>
+<tr><th>Case<th><th>example
+<tr><td>trim
+<td>Ignore white space at the begining and the end of the string
+<td>'&nbsp;&nbsp;&nbsp;asdf'<br>
+'asdf&nbsp;&nbsp;'<br>
+'&nbsp;&nbsp;asdf&nbsp;&nbsp;&nbsp;&nbsp;'<br>
+'asdf'<br>
+</table>
 
 ## Diclaimer
 This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.

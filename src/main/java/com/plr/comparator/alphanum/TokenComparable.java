@@ -4,9 +4,9 @@ import java.util.Comparator;
 
 abstract public class TokenComparable implements Comparable<TokenComparable> {
 
-	final Comparator<String> comparator;
+	final Comparator<CharSequence> comparator;
 
-	TokenComparable( Comparator<String> comparator) {
+	TokenComparable( Comparator<CharSequence> comparator) {
 		this.comparator = comparator;
 	}
 
@@ -17,15 +17,15 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 			return 0;
 		}
 		
-		return comparator.compare(getStr(), other.getStr());
+		return comparator.compare(getStr().toString(), other.getStr().toString());
 	}
 
 	@Override
 	public String toString() {
-		return (isNumber() ? "N>" : "A>") +getStr().toString();
+		return (isNumber() ? "N>" : "A>") + getStr().toString();
 	}
 
-	public abstract String getStr();
+	public abstract CharSequence getStr();
 	
 	abstract boolean isNumber();
 

@@ -6,11 +6,11 @@ import java.util.Comparator;
 public class NumberTokenComparable extends TokenComparable {
 
 	private final boolean isNegative;
-	private final String units;
-	private final String decimal;
-	private final String str;
+	private final CharSequence units;
+	private final CharSequence decimal;
+	private final CharSequence str;
 
-	NumberTokenComparable(String str, Comparator<String> alphaComparator) {
+	NumberTokenComparable(String str, Comparator<CharSequence> alphaComparator) {
 		super(alphaComparator);
 		this.str = str;
 
@@ -61,7 +61,7 @@ public class NumberTokenComparable extends TokenComparable {
 		this.decimal = decimal;
 	}
 
-	NumberTokenComparable(boolean isNegative, String units, String decimal, String str, Comparator<String> comparator) {
+	NumberTokenComparable(boolean isNegative, CharSequence units, CharSequence decimal, CharSequence str, Comparator<CharSequence> comparator) {
 		super(comparator);
 		this.isNegative = isNegative;
 		this.decimal = decimal;
@@ -98,7 +98,7 @@ public class NumberTokenComparable extends TokenComparable {
 
 	}
 
-	private int comapreNum(String s1, String s2, NumberTokenComparable other) {
+	private int comapreNum(CharSequence s1, CharSequence s2, NumberTokenComparable other) {
 
 		int beg1 = 0;
 		int beg2 = 0;
@@ -134,8 +134,8 @@ public class NumberTokenComparable extends TokenComparable {
 			return super.compareTo(other);
 		}
 		
-		String thisStr = this.getStr();
-		String otherStr = other.getStr();
+		CharSequence thisStr = this.getStr();
+		CharSequence otherStr = other.getStr();
 		
 		int len1 = thisStr.length();
 		int len2 = otherStr.length();
@@ -147,8 +147,8 @@ public class NumberTokenComparable extends TokenComparable {
 
 	private int comapreDecimals(NumberTokenComparable o) {
 
-		String s1 = this.decimal;
-		String s2 = o.decimal;
+		CharSequence s1 = this.decimal;
+		CharSequence s2 = o.decimal;
 
 		if (s1 == null) {
 			if (s2 != null) {
@@ -201,15 +201,15 @@ public class NumberTokenComparable extends TokenComparable {
 	}
 
 	@Override
-	public String getStr() {
+	public CharSequence getStr() {
 		return str;
 	}
 
-	public String getDecimal() {
+	public CharSequence getDecimal() {
 		return decimal;
 	}
 
-	public String getUnit() {
+	public CharSequence getUnit() {
 		return units;
 	}
 
