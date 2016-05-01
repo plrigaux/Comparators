@@ -70,6 +70,7 @@ class NaturalComparatorTest extends Specification {
 		"pics 5 test"		| ["pics", " 5", " test"]
 		"pics    5 6"		| ["pics", "    5", " 6"]
 		"pics    5 6 "		| ["pics", "    5", " 6", " "]
+		"pics"				| ["pics"]
 	}
 
 	def "Pure numbers" () {
@@ -542,5 +543,75 @@ class NaturalComparatorTest extends Specification {
 		"-10.30"	| "-10.3"
 		"-10.30"	| "-10.3 "
 		"10.300 "	| "10.3"
+	}
+	
+	def "Dev test"() {
+	
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator();
+		
+		
+		when: "Do nothing"
+		
+		Tokenizer tk = new Tokenizer(naturalComparator, first);
+		
+		def list = []
+		
+		
+		TokenComparable tc;
+		
+		while((tc = tk.getNext()) != null) {
+			list << tc
+		}
+		
+		
+		def list2 = []
+		
+		list.each { token ->
+			list2 << token.getStr().toString();
+		}
+
+		println "$first -> $list"
+
+		then:
+
+		list2 == expected
+
+		where:
+
+	first 				| expected 		
+		"doc20.doc" 		| ["doc", "20", ".doc" ] 	
+		"doc10.doc"			| ["doc", "10", ".doc" ] 
+		"doc2.doc"			| ["doc", "2", ".doc" ] 	
+		"doc2.1.doc"		| ["doc", "2.1", ".doc" ] 	
+		"doc2.10.doc"		| ["doc", "2.10", ".doc" ] 	
+		
+		//pure numbers
+		"20"				| ["20"]	
+		"2"					| ["2"]
+		"-20"				| ["-20"]
+		" -40"				| [" -40"]
+		"-20.234"			| ["-20.234"]
+		
+		//comma or hyphen in string
+		"asdf-20.234"		| ["asdf-", "20.234"]
+		"asdf-20.234asdf"	| ["asdf-", "20.234", "asdf"]
+		"TEST20.23.4.8asdf"	| ["TEST", "20", ".", "23", ".", "4.8", "asdf"]
+		"TEST20-23-4-8asdf"	| ["TEST", "20", "-", "23", "-", "4", "-", "8", "asdf"]
+		
+		//zeros
+		"03.50"				| ["03.50"]
+		"00003"				| ["00003"]
+		"0.3000"			| ["0.3000"]
+		
+		//spaces
+		"pics 5"			| ["pics", " 5"]
+		"pics    5"			| ["pics", "    5"]
+		"pics 5 test"		| ["pics", " 5", " test"]
+		"pics    5 6"		| ["pics", "    5", " 6"]
+		"pics    5 6 "		| ["pics", "    5", " 6", " "]
+		"pics"				| ["pics"]
+
+		
 	}
 }
