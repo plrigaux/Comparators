@@ -1,8 +1,6 @@
 package com.plr.comparator.alphanum;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +25,6 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	private int to = -1;
 	private int start = 0;
 
-	private boolean first = true;
 	private boolean matcherFind = false;
 
 	Tokenizer(NaturalComparator naturalComparator, CharSequence toSplit) {
@@ -36,9 +33,9 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		this.original = toSplit;
 
 		if (naturalComparator.isSpaceInsensitve()) {
-			this.toSplit = spaceInsensible();
+			this.toSplit = spaceInsensible(toSplit);
 		} else if (naturalComparator.isSpaceInsensitve2()) {
-			this.toSplit = spaceInsensible2();
+			this.toSplit = spaceInsensible2(toSplit);
 		} else {
 			this.toSplit = toSplit;
 		}
@@ -48,59 +45,59 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		trimMatcher();
 	}
 
-	List<TokenComparable> split() {
-
-		List<TokenComparable> list = new ArrayList<>();
-
-		matcher.reset();
-		matcher.region(from, to);
-
-		int start = matcher.regionStart();
-
-		int j = 0;
-		while (matcher.find()) {
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("toSplit:'{}'", toSplit);
-				for (int i = 0; i < matcher.groupCount(); i++) {
-					logger.debug("find {} Gr{}: '{}'", j, i, matcher.group(i));
-				}
-				j++;
-				logger.debug("");
-			}
-
-			if (start != matcher.start()) {
-				CharSequence prev = new StringBuilderSpecial2(toSplit, start, matcher.start());
-				list.add(new AlphaTokenComparable(prev, naturalComparator.getAlphaComparator()));
-			}
-
-			CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
-			CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(2), matcher.end(2));
-
-			// TODO remove the group for neg
-			boolean isNegative = matcher.start(1) != -1;
-
-			// TODO try to find why there is a dot at front (+1)
-			CharSequence decimal = null;
-
-			int end3 = matcher.end(3);
-			if (end3 != -1) {
-				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
-			}
-
-			list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr,
-					naturalComparator.getAlphaComparator()));
-
-			start = matcher.end();
-		}
-
-		if (start != matcher.regionEnd()) {
-			CharSequence last = toSplit.subSequence(start, matcher.regionEnd());
-			list.add(new AlphaTokenComparable(last, naturalComparator.getAlphaComparator()));
-		}
-
-		return list;
-	}
+//	List<TokenComparable> split() {
+//
+//		List<TokenComparable> list = new ArrayList<>();
+//
+//		matcher.reset();
+//		matcher.region(from, to);
+//
+//		int start = matcher.regionStart();
+//
+//		int j = 0;
+//		while (matcher.find()) {
+//
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("toSplit:'{}'", toSplit);
+//				for (int i = 0; i < matcher.groupCount(); i++) {
+//					logger.debug("find {} Gr{}: '{}'", j, i, matcher.group(i));
+//				}
+//				j++;
+//				logger.debug("");
+//			}
+//
+//			if (start != matcher.start()) {
+//				CharSequence prev = new StringBuilderSpecial2(toSplit, start, matcher.start());
+//				list.add(new AlphaTokenComparable(prev, naturalComparator.getAlphaComparator()));
+//			}
+//
+//			CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
+//			CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(2), matcher.end(2));
+//
+//			// TODO remove the group for neg
+//			boolean isNegative = matcher.start(1) != -1;
+//
+//			// TODO try to find why there is a dot at front (+1)
+//			CharSequence decimal = null;
+//
+//			int end3 = matcher.end(3);
+//			if (end3 != -1) {
+//				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
+//			}
+//
+//			list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr,
+//					naturalComparator.getAlphaComparator()));
+//
+//			start = matcher.end();
+//		}
+//
+//		if (start != matcher.regionEnd()) {
+//			CharSequence last = toSplit.subSequence(start, matcher.regionEnd());
+//			list.add(new AlphaTokenComparable(last, naturalComparator.getAlphaComparator()));
+//		}
+//
+//		return list;
+//	}
 
 	private int counter = 0;
 	private boolean hasPrevious = false;
@@ -129,23 +126,20 @@ public class Tokenizer implements Iterator<TokenComparable> {
 					token = grabNumToken();
 				}
 				
-				first = false;
 				hasPrevious = false;
 			} else {
 				token = grabNumToken();
 			}
 		} else {
 			// No match at all
-			if (first) {
+			if (from == start) {
 				token = new AlphaTokenComparable(toSplit, naturalComparator.getAlphaComparator());
 				counter++;
-				first = false;
 				start = to;
 			}
 			// The last part
 			else if (start != to) {
 				token = grabAlphaToken(start, to);
-				first = false;
 				start = to;
 			}
 		}
@@ -221,7 +215,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		return i + 1;
 	}
 
-	private CharSequence spaceInsensible() {
+	private CharSequence spaceInsensible(CharSequence toSplit) {
 		int l = toSplit.length();
 		StringBuilderSpecial sb = new StringBuilderSpecial(l);
 		int i = 0;
@@ -236,7 +230,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		return sb;
 	}
 
-	private CharSequence spaceInsensible2() {
+	private CharSequence spaceInsensible2(CharSequence toSplit) {
 		int l = toSplit.length();
 
 		l = _rtrim(toSplit);

@@ -10,68 +10,8 @@ import static com.plr.comparator.alphanum.CompType.*
 import spock.lang.Specification
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.*
 
+
 class NaturalComparatorTest extends Specification {
-
-
-
-
-	def "Mutiple cases of parser"() {
-
-		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
-		
-		def list = naturalComparator.split(first)
-		
-		def list2 = []
-		
-		list.each { token ->
-			list2 << token.getStr().toString();
-		}
-
-		println "$first -> $list"
-
-		expect:
-
-
-
-		list2 == expected
-
-
-		where:
-
-		first 				| expected 		
-		"doc20.doc" 		| ["doc", "20", ".doc" ] 	
-		"doc10.doc"			| ["doc", "10", ".doc" ] 
-		"doc2.doc"			| ["doc", "2", ".doc" ] 	
-		"doc2.1.doc"		| ["doc", "2.1", ".doc" ] 	
-		"doc2.10.doc"		| ["doc", "2.10", ".doc" ] 	
-		
-		//pure numbers
-		"20"				| ["20"]	
-		"2"					| ["2"]
-		"-20"				| ["-20"]
-		" -40"				| [" -40"]
-		"-20.234"			| ["-20.234"]
-		
-		//comma or hyphen in string
-		"asdf-20.234"		| ["asdf-", "20.234"]
-		"asdf-20.234asdf"	| ["asdf-", "20.234", "asdf"]
-		"TEST20.23.4.8asdf"	| ["TEST", "20", ".", "23", ".", "4.8", "asdf"]
-		"TEST20-23-4-8asdf"	| ["TEST", "20", "-", "23", "-", "4", "-", "8", "asdf"]
-		
-		//zeros
-		"03.50"				| ["03.50"]
-		"00003"				| ["00003"]
-		"0.3000"			| ["0.3000"]
-		
-		//spaces
-		"pics 5"			| ["pics", " 5"]
-		"pics    5"			| ["pics", "    5"]
-		"pics 5 test"		| ["pics", " 5", " test"]
-		"pics    5 6"		| ["pics", "    5", " 6"]
-		"pics    5 6 "		| ["pics", "    5", " 6", " "]
-		"pics"				| ["pics"]
-	}
 
 	def "Pure numbers" () {
 		given:
@@ -614,4 +554,25 @@ class NaturalComparatorTest extends Specification {
 
 		
 	}
+	
+	def "Ignore white space"() {
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator(String.CASE_INSENSITIVE_ORDER, SPACE_INSENSITVE);
+		
+		expect:
+
+		naturalComparator.compare(smaller, bigger) == 0
+
+		where:
+
+		smaller		|	bigger
+		
+		"abcd"		| "abcd"
+		"abCd"		| "Abcd"
+		"ab Cd"		| "Ab\n\r\tcd   "
+		" ab Cd"	| "  A b" + System.getProperty("line.separator") + "cd "
+	
+	}
+	
+	
 }

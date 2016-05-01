@@ -4,7 +4,7 @@ import static com.plr.comparator.alphanum.NaturalComparator.Flags.LTRIM;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.RTRIM;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE2;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.TRIM;
+import static com.plr.comparator.alphanum.NaturalComparator.Flags.*;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -109,37 +109,28 @@ public class NaturalComparator implements Comparator<CharSequence> {
 	}
 
 	// Just for tests
-	List<TokenComparable> split(CharSequence s1) {
-		Tokenizer splitter1 = new Tokenizer(this, s1);
-		return splitter1.split();
-	}
+//	List<TokenComparable> split(CharSequence s1) {
+//		Tokenizer splitter1 = new Tokenizer(this, s1);
+//		return splitter1.split();
+//	}
 
 	public int compare(CharSequence s1, CharSequence s2) {
+		
+		logger.debug("s1: '{}' s2: '{}'", s1, s2);
 
 		Tokenizer splitter1 = new Tokenizer(this, s1);
 		Tokenizer splitter2 = new Tokenizer(this, s2);
 
-		// List<TokenComparable> list1 = splitter1.split();
-		// List<TokenComparable> list2 = splitter2.split();
-
-		// if (logger.isDebugEnabled()) {
-		// logger.debug("list1: {}", list1);
-		// logger.debug("list2: {}", list2);
-		// }
-
-		List<TokenComparable> list1 = new ArrayList<>();
-		List<TokenComparable> list2 = new ArrayList<>();
+		List<TokenComparable> list = new ArrayList<>();
 
 		int result = 0;
-		// boolean hasNext1;
-		// boolean hasNext2 = false;
 
 		while (splitter1.hasNext() && splitter2.hasNext()) {
 			TokenComparable ss1 = splitter1.next();
 			TokenComparable ss2 = splitter2.next();
 
-			list1.add(ss1);
-			list2.add(ss2);
+			list.add(ss1);
+			list.add(ss2);
 
 			result = ss1.compareTo(ss2);
 
@@ -156,9 +147,6 @@ public class NaturalComparator implements Comparator<CharSequence> {
 
 		if (pureNumbers && (splitter1.hasNext() || splitter2.hasNext())) {
 
-			// System.out.println(splitter1.hasNext());
-			// System.out.println(splitter2.hasNext());
-			// List<TokenComparable> listMax;
 			Tokenizer tokenizerMax = splitter1.hasNext() ? splitter1 : splitter2;
 
 			TokenComparable ss = tokenizerMax.next();
@@ -176,35 +164,20 @@ public class NaturalComparator implements Comparator<CharSequence> {
 		// For now equals, now compare leading zeros
 		if (!pureNumbers) {
 			int k = 0;
-			int lim = list1.size();
+			int lim = list.size();
 			while (k < lim) {
-				TokenComparable ss1 = list1.get(k);
-				TokenComparable ss2 = list2.get(k);
+				TokenComparable ss1 = list.get(k++);
+				TokenComparable ss2 = list.get(k++);
 
 				result = ss1.compareLeadingZerosTo(ss2);
 
 				if (result != 0) {
 					return result;
 				}
-				k++;
 			}
 
-			if (result == 0) {
-				CharSequence st1 = s1;
-				CharSequence st2 = s2;
-
-				// if (flagSet.contains(Flags.TRIM)) {
-				// st1 = trim(s1);
-				// st2 = trim(s1);
-				// } else if (flagSet.contains(Flags.LTRIM)) {
-				// st1 = ltrim(s1);
-				// st2 = ltrim(s2);
-				// } else if (flagSet.contains(Flags.TRIM)) {
-				// st1 = rtrim(s1);
-				// st2 = rtrim(s2);
-				// }
-
-				result = ASCII.compare(st1, st2);
+			if (result == 0 && !isSpaceInsensitve() && !isSpaceInsensitve2()) {
+				result = alphaComparator.compare(s1, s2);
 			}
 		}
 
@@ -221,7 +194,7 @@ public class NaturalComparator implements Comparator<CharSequence> {
 	}
 
 	public boolean isTrim() {
-		return flagSet.contains(TRIM);
+		return flagSet.contains(TRIM) || flagSet.contains(PRIMARY);
 	}
 
 	public boolean isRTrim() {
