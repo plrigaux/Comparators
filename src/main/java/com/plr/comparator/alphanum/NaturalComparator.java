@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class NaturalComparator implements Comparator<CharSequence> {
 	};
 
 	public enum Flags {
-		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, NODECIMAL
 	};
 
 	public NaturalComparator(Flags... flags) {
@@ -99,6 +100,11 @@ public class NaturalComparator implements Comparator<CharSequence> {
 
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
 
+	final static String NUM_PAT = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
+	final static String NUM_PATNODEC = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))";
+
+	final Pattern pattern;
+
 	public NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
@@ -106,16 +112,19 @@ public class NaturalComparator implements Comparator<CharSequence> {
 
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
 
+		String pat = isNoDecimal() ? NUM_PATNODEC : NUM_PAT;
+
+		pattern = Pattern.compile(pat);
 	}
 
 	// Just for tests
-//	List<TokenComparable> split(CharSequence s1) {
-//		Tokenizer splitter1 = new Tokenizer(this, s1);
-//		return splitter1.split();
-//	}
+	// List<TokenComparable> split(CharSequence s1) {
+	// Tokenizer splitter1 = new Tokenizer(this, s1);
+	// return splitter1.split();
+	// }
 
 	public int compare(CharSequence s1, CharSequence s2) {
-		
+
 		logger.debug("s1: '{}' s2: '{}'", s1, s2);
 
 		Tokenizer splitter1 = new Tokenizer(this, s1);
@@ -211,6 +220,10 @@ public class NaturalComparator implements Comparator<CharSequence> {
 
 	public boolean isSpaceInsensitve2() {
 		return flagSet.contains(SPACE_INSENSITVE2);
+	}
+
+	public boolean isNoDecimal() {
+		return flagSet.contains(Flags.NODECIMAL);
 	}
 
 }

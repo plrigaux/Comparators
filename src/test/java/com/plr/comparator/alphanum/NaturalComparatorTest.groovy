@@ -557,7 +557,7 @@ class NaturalComparatorTest extends Specification {
 	
 	def "Ignore white space"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(String.CASE_INSENSITIVE_ORDER, SPACE_INSENSITVE);
+		NaturalComparator naturalComparator = new NaturalComparator(SPACE_INSENSITVE);
 		
 		expect:
 
@@ -567,10 +567,33 @@ class NaturalComparatorTest extends Specification {
 
 		smaller		|	bigger
 		
-		"abcd"		| "abcd"
-		"abCd"		| "Abcd"
-		"ab Cd"		| "Ab\n\r\tcd   "
-		" ab Cd"	| "  A b" + System.getProperty("line.separator") + "cd "
+		
+		"Ab Cd"		| "Ab\n\r\tCd   "
+		" ab Cd"	| "  a b" + System.getProperty("line.separator") + "Cd "
+		"Ab Cd"		| "Ab\n\r\tCd \u00A0  "
+
+	
+	}
+	
+	
+	def "No decimal"() {
+		given:
+		NaturalComparator naturalComparator = new NaturalComparator(NODECIMAL);
+		NaturalComparator naturalComparator2 = new NaturalComparator(PRIMARY);
+		
+		expect:
+
+//		naturalComparator.compare(smaller, bigger) < 0
+		compToZero (naturalComparator, first, second, comparison) == true
+		compToZero (naturalComparator2, first, second, comparison2) == true
+		
+		where:
+
+		first		|	second 	| comparison 	| comparison2
+		"10.1"		| "10.10" 	| LESS 			| EQUAL
+		"10.123"	| "10.2" 	| GREATER 		| LESS
+		"-10.10"	| "-10.1" 	| GREATER 		| EQUAL
+		"-10.2"		| "-10.123" | LESS 			| LESS
 	
 	}
 	
