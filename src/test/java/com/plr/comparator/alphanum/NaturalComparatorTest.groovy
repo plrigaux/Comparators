@@ -15,7 +15,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "Pure numbers" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER);
 		Comparator<String> comp = naturalComparator.reversed();
 		comp.reversed();
 		def expected = [
@@ -72,7 +72,7 @@ class NaturalComparatorTest extends Specification {
 	def "Pure numbers comparison"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER);
 
 		expect:
 
@@ -322,10 +322,10 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "Mutiple cases sdfa"() {
+	def "Sort list"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
 		def expected = [
 			"1-2",
 			"1-02",
@@ -387,6 +387,30 @@ class NaturalComparatorTest extends Specification {
 
 		list == expected
 	}
+	
+	def "Mutiple cases primary vs secondary"() {
+		given:
+
+		NaturalComparator naturalComparatorP = NaturalComparator.getComparator(PRIMARY);
+		NaturalComparator naturalComparatorS = NaturalComparator.getComparator(SECONDARY);
+				
+		expect:
+
+		compToZero (naturalComparatorP, first, second, comparison) == true
+		compToZero (naturalComparatorS, first, second, comparison2) == true
+
+				
+		where:
+		
+		first		|	second 		| comparison 	| comparison2	
+		"1-2"		| "1-02"		| EQUAL			| LESS			
+		"1- 2"		| "1-02" 		| EQUAL			| LESS		
+		"1-02"		| "1- 2" 		| EQUAL			| GREATER	
+		"1-02"		| "1- 2 Tail" 	| LESS			| LESS
+		"1-2 Tail"	| "1- 2" 		| GREATER		| GREATER
+	
+
+	}
 
 	boolean compToZero(NaturalComparator naturalComparator, CharSequence s1, CharSequence s2, CompType compType) {
 
@@ -405,7 +429,7 @@ class NaturalComparatorTest extends Specification {
 	def "Mutiple cases"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
 
 		expect:
 
@@ -480,7 +504,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "Mutiple white space"() {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(PRIMARY);
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, PRIMARY);
 
 
 		expect:
@@ -507,7 +531,7 @@ class NaturalComparatorTest extends Specification {
 	def "Dev test"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
 
 
 		when: "Do nothing"
@@ -610,21 +634,18 @@ class NaturalComparatorTest extends Specification {
 
 
 	def "No decimal"() {
+
 		given:
 		
-		
-		
-		
 		NaturalComparator naturalComparator1 =  NaturalComparator.getComparator();
-		NaturalComparator naturalComparator2 =  NaturalComparator.getComparator(REAL_NUMBER)
-		NaturalComparator naturalComparator3 =  NaturalComparator.getComparator(SECONDARY, REAL_NUMBER);
-		NaturalComparator naturalComparator4 =  NaturalComparator.getComparator(ALL_INTEGER);
-		NaturalComparator naturalComparator5 =  NaturalComparator.getComparator(REAL_NUMBER, ALL_INTEGER);
-		NaturalComparator naturalComparator6 =  NaturalComparator.getComparator(SECONDARY, REAL_NUMBER, ALL_INTEGER);
+		NaturalComparator naturalComparator2 =  NaturalComparator.getComparator(RATIONAL_NUMBER)
+		NaturalComparator naturalComparator3 =  NaturalComparator.getComparator(SECONDARY, RATIONAL_NUMBER);
+		NaturalComparator naturalComparator4 =  NaturalComparator.getComparator(NEGATIVE_NUMBER);
+		NaturalComparator naturalComparator5 =  NaturalComparator.getComparator(RATIONAL_NUMBER, NEGATIVE_NUMBER);
+		NaturalComparator naturalComparator6 =  NaturalComparator.getComparator(SECONDARY, RATIONAL_NUMBER, NEGATIVE_NUMBER);
 		
 		expect:
 
-		//		naturalComparator.compare(smaller, bigger) < 0
 		compToZero (naturalComparator1, first, second, comparison) == true
 		compToZero (naturalComparator2, first, second, comparison2) == true
 		compToZero (naturalComparator3, first, second, comparison3) == true

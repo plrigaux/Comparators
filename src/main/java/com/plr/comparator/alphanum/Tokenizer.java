@@ -171,7 +171,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		boolean isNegative = false;
 		int gr = 1;
 
-		if (naturalComparator.isAllInteger()) {
+		if (naturalComparator.isNegativeNumber()) {
 			isNegative = matcher.start(gr++) != -1;
 		}
 

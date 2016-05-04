@@ -46,6 +46,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
+	
 	final private Comparator<CharSequence> alphaComparator;
 
 	// TODO make the regex not capture the point
@@ -59,7 +60,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	final static public Comparator<CharSequence> ASCII = new Comparator<CharSequence>() {
 		@Override
 		public int compare(CharSequence o1, CharSequence o2) {
-
+		
 			int len1 = o1.length();
 			int len2 = o2.length();
 			int lim = Math.min(len1, len2);
@@ -83,7 +84,8 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	};
 
 	public enum Flags {
-		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, REAL_NUMBER, ALL_INTEGER
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, REAL_NUMBER, NEGATIVE_NUMBER,
+		RATIONAL_NUMBER
 	};
 
 	private boolean pureNumbers;
@@ -125,17 +127,17 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		
 		regex.append(PREFIX_REGEX);
 		
-		if( isAllInteger()) {
+		if( isNegativeNumber()) {
 			regex.append(NEG_REGEX);
 		}
 		
 		regex.append(NUM_REGEX);
 
-		if( isAllInteger()) {
+		if( isNegativeNumber()) {
 			regex.append(")");
 		}
 		
-		if( isRealNumber()) {
+		if( isRationalNumber()) {
 			regex.append(DEC_REGEX);
 		}
 		
@@ -255,12 +257,12 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		return flagSet.contains(SPACE_INSENSITVE2);
 	}
 
-	public boolean isRealNumber() {
-		return flagSet.contains(Flags.REAL_NUMBER);
+	public boolean isRationalNumber() {
+		return flagSet.contains(Flags.RATIONAL_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
 	}
 	
-	public boolean isAllInteger() {
-		return flagSet.contains(Flags.ALL_INTEGER);
+	public boolean isNegativeNumber() {
+		return flagSet.contains(Flags.NEGATIVE_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
 	}
 
 }
