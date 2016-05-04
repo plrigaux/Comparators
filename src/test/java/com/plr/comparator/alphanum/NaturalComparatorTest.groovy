@@ -15,16 +15,36 @@ class NaturalComparatorTest extends Specification {
 
 	def "Pure numbers" () {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 		Comparator<String> comp = naturalComparator.reversed();
 		comp.reversed();
-		def expected = ["-123", "-12",
-			"-1.1532456", "-1.15", "-1.1" , "-1", "-0.99999999999", "-0.99",
-			"-0.15", "-0.1",  "0", "0.1", "0.15", "1",  "1.1", "1.15",
-			"11.1", "11.67", "11.6756745674", "11.68", "12", "123"]
-		
+		def expected = [
+			"-123",
+			"-12",
+			"-1.1532456",
+			"-1.15",
+			"-1.1" ,
+			"-1",
+			"-0.99999999999",
+			"-0.99",
+			"-0.15",
+			"-0.1",
+			"0",
+			"0.1",
+			"0.15",
+			"1",
+			"1.1",
+			"1.15",
+			"11.1",
+			"11.67",
+			"11.6756745674",
+			"11.68",
+			"12",
+			"123"
+		]
+
 		def list = []
-		
+
 		list.addAll(expected)
 
 		Collections.shuffle(list)
@@ -38,44 +58,44 @@ class NaturalComparatorTest extends Specification {
 		Collections.sort(list, naturalComparator)
 
 		then: "The list are equal"
-		
+
 		println list
 		println expected
-		
+
 		for(int i = 0; i < list.size(); i++) {
 			list[i] == expected[i]
 		}
-		
+
 		list == expected
 	}
-	
+
 	def "Pure numbers comparison"() {
-		
-				given:
-				NaturalComparator naturalComparator = new NaturalComparator();
-		
-				expect:
-		
-				naturalComparator.compare(smaller, bigger) < 0
-				naturalComparator.compare(bigger , smaller) > 0
-		
-				where:
-		
-				smaller 		| bigger 		
-				"-123"			| "-1.15" 
-				"-1.1532456"	| "-1.15"
-				"123"			| "1234"
-				"-1.1532456"	| "-1"
-				"-123"			| "-0.1"
-				"-123"			| "-1.1"
-				"-0.99"			| "-0.15"
-				"-1.1532456"	| "-0.99"
-			}
-	
-	
+
+		given:
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+
+		expect:
+
+		naturalComparator.compare(smaller, bigger) < 0
+		naturalComparator.compare(bigger , smaller) > 0
+
+		where:
+
+		smaller 		| bigger
+		"-123"			| "-1.15"
+		"-1.1532456"	| "-1.15"
+		"123"			| "1234"
+		"-1.1532456"	| "-1"
+		"-123"			| "-0.1"
+		"-123"			| "-1.1"
+		"-0.99"			| "-0.15"
+		"-1.1532456"	| "-0.99"
+	}
+
+
 	def "test sort list" () {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 
 
 		def list = [
@@ -138,18 +158,18 @@ class NaturalComparatorTest extends Specification {
 		list != expected
 
 		when: "Sorting list"
-		
+
 		println list
 		Collections.sort(list, naturalComparator)
 		println list
-		
+
 		then: "The list are equal"
 		list == expected
 	}
 
 	def "test sort list ignore case" () {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(String.CASE_INSENSITIVE_ORDER);
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(String.CASE_INSENSITIVE_ORDER);
 
 		def expected = [
 			"zo1.doc",
@@ -176,7 +196,7 @@ class NaturalComparatorTest extends Specification {
 			"zo101.doc",
 			"Zo102.doc",
 		]
-		
+
 		def list = []
 
 		list.addAll(expected)
@@ -189,11 +209,11 @@ class NaturalComparatorTest extends Specification {
 		list != expected
 
 		when: "Sorting list"
-		
+
 		//println list
 		Collections.sort(list, naturalComparator)
 		//println list
-		
+
 		then: "The list are equal"
 		list == expected
 	}
@@ -201,7 +221,7 @@ class NaturalComparatorTest extends Specification {
 	def "product names sort"() {
 		given:
 
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 
 		def list = [
 			"1000X Radonius Maximus",
@@ -278,7 +298,7 @@ class NaturalComparatorTest extends Specification {
 			"Xiph Xlater 5000",
 			"Xiph Xlater 10000"
 		]
-	
+
 		when: "Do nothing"
 
 		then: "The list aren't equal"
@@ -290,22 +310,22 @@ class NaturalComparatorTest extends Specification {
 		then: "The list are equal"
 		println "Sorted:   " + list
 		println "Expected: " + expected
-		
-		
-		
+
+
+
 		list.eachWithIndex { item, index ->
 			def exp =  expected[index]
 			boolean b = item == exp
 			println "$b $index '$item' ----- $exp"
 		}
-		
+
 		list == expected
 	}
 
 	def "Mutiple cases sdfa"() {
 
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 		def expected = [
 			"1-2",
 			"1-02",
@@ -355,16 +375,16 @@ class NaturalComparatorTest extends Specification {
 		Collections.sort(list, naturalComparator)
 
 		then: "The list are equal"
-		
+
 		println "Sorted:   " + list
 		println "Expected: " + expected
-		
+
 		list.eachWithIndex { item, index ->
 			def exp =  expected[index]
 			boolean b = item == exp
 			println "$b $index '$item' ----- $exp"
 		}
-		
+
 		list == expected
 	}
 
@@ -374,18 +394,18 @@ class NaturalComparatorTest extends Specification {
 
 		switch (compType) {
 			case GREATER:
-				return val > 0
+			return val > 0
 			case LESS:
-				return val < 0
+			return val < 0
 			case EQUAL:
-				return val == 0
+			return val == 0
 		}
 	}
 
 	def "Mutiple cases"() {
 
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 
 		expect:
 
@@ -416,30 +436,29 @@ class NaturalComparatorTest extends Specification {
 		"Allegia 50 Clasteron" 	| "Allegia 50B Clasteron" 	| LESS
 		"1-2 Pizza"				| "1- 2"					| GREATER
 	}
-	
+
 	def "Mutiple cases2"() {
-	
-		
+
+
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
 
 		expect:
 
 		compToZero (naturalComparator, "z1.doc", "z11.doc", LESS) == true
 		compToZero (naturalComparator, "z11.doc", "z1.doc", GREATER) == true
-		
+
 		compToZero (naturalComparator, "z1.doc", "z11.doc", GREATER) == false
 		compToZero (naturalComparator, "z11.doc", "z1.doc", LESS) == false
-		
-		
+
+
 		compToZero (naturalComparator, "z10.doc", "z11.doc", LESS) == true
 		compToZero (naturalComparator, "z11.doc", "z10.doc", GREATER) == true
-
 	}
-	
+
 	def "Mutiple cases Numbers"() {
 		given:
-		
+
 		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
 		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, NaturalComparator.ASCII);
 
@@ -457,11 +476,11 @@ class NaturalComparatorTest extends Specification {
 		"-10.123"	| "-10.12"
 		"-10.123"	| "10.12"
 	}
-	
-	
+
+
 	def "Mutiple white space"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(PRIMARY);
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(PRIMARY);
 
 
 		expect:
@@ -484,29 +503,29 @@ class NaturalComparatorTest extends Specification {
 		"-10.30"	| "-10.3 "
 		"10.300 "	| "10.3"
 	}
-	
+
 	def "Dev test"() {
-	
+
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator();
-		
-		
+		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+
+
 		when: "Do nothing"
-		
+
 		Tokenizer tk = new Tokenizer(naturalComparator, first);
-		
+
 		def list = []
-		
-		
+
+
 		TokenComparable tc;
-		
+
 		while((tc = tk.getNext()) != null) {
 			list << tc
 		}
-		
-		
+
+
 		def list2 = []
-		
+
 		list.each { token ->
 			list2 << token.getStr().toString();
 		}
@@ -519,31 +538,47 @@ class NaturalComparatorTest extends Specification {
 
 		where:
 
-	first 				| expected 		
-		"doc20.doc" 		| ["doc", "20", ".doc" ] 	
-		"doc10.doc"			| ["doc", "10", ".doc" ] 
-		"doc2.doc"			| ["doc", "2", ".doc" ] 	
-		"doc2.1.doc"		| ["doc", "2.1", ".doc" ] 	
-		"doc2.10.doc"		| ["doc", "2.10", ".doc" ] 	
-		
-		//pure numbers
-		"20"				| ["20"]	
+		first 				| expected
+		"doc20.doc" 		| ["doc", "20", ".doc" ]
+		"doc10.doc"			| ["doc", "10", ".doc" ]
+		"doc2.doc"			| ["doc", "2", ".doc" ]
+		"doc2.1.doc"		| ["doc", "2.1", ".doc" ]
+		"doc2.10.doc"		| ["doc", "2.10", ".doc" ]//pure numbers
+		"20"				| ["20"]
 		"2"					| ["2"]
 		"-20"				| ["-20"]
 		" -40"				| [" -40"]
 		"-20.234"			| ["-20.234"]
-		
+
 		//comma or hyphen in string
 		"asdf-20.234"		| ["asdf-", "20.234"]
 		"asdf-20.234asdf"	| ["asdf-", "20.234", "asdf"]
-		"TEST20.23.4.8asdf"	| ["TEST", "20", ".", "23", ".", "4.8", "asdf"]
-		"TEST20-23-4-8asdf"	| ["TEST", "20", "-", "23", "-", "4", "-", "8", "asdf"]
-		
+		"TEST20.23.4.8asdf"	| [
+			"TEST",
+			"20",
+			".",
+			"23",
+			".",
+			"4.8",
+			"asdf"
+		]
+		"TEST20-23-4-8asdf"	| [
+			"TEST",
+			"20",
+			"-",
+			"23",
+			"-",
+			"4",
+			"-",
+			"8",
+			"asdf"
+		]
+
 		//zeros
 		"03.50"				| ["03.50"]
 		"00003"				| ["00003"]
 		"0.3000"			| ["0.3000"]
-		
+
 		//spaces
 		"pics 5"			| ["pics", " 5"]
 		"pics    5"			| ["pics", "    5"]
@@ -552,13 +587,13 @@ class NaturalComparatorTest extends Specification {
 		"pics    5 6 "		| ["pics", "    5", " 6", " "]
 		"pics"				| ["pics"]
 
-		
+
 	}
-	
+
 	def "Ignore white space"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(SPACE_INSENSITVE);
-		
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(SPACE_INSENSITVE);
+
 		expect:
 
 		naturalComparator.compare(smaller, bigger) == 0
@@ -566,36 +601,47 @@ class NaturalComparatorTest extends Specification {
 		where:
 
 		smaller		|	bigger
-		
-		
+
+
 		"Ab Cd"		| "Ab\n\r\tCd   "
 		" ab Cd"	| "  a b" + System.getProperty("line.separator") + "Cd "
 		"Ab Cd"		| "Ab\n\r\tCd \u00A0  "
-
-	
 	}
-	
-	
+
+
 	def "No decimal"() {
 		given:
-		NaturalComparator naturalComparator = new NaturalComparator(NODECIMAL);
-		NaturalComparator naturalComparator2 = new NaturalComparator(PRIMARY);
+		
+		
+		
+		
+		NaturalComparator naturalComparator1 =  NaturalComparator.getComparator();
+		NaturalComparator naturalComparator2 =  NaturalComparator.getComparator(REAL_NUMBER)
+		NaturalComparator naturalComparator3 =  NaturalComparator.getComparator(SECONDARY, REAL_NUMBER);
+		NaturalComparator naturalComparator4 =  NaturalComparator.getComparator(ALL_INTEGER);
+		NaturalComparator naturalComparator5 =  NaturalComparator.getComparator(REAL_NUMBER, ALL_INTEGER);
+		NaturalComparator naturalComparator6 =  NaturalComparator.getComparator(SECONDARY, REAL_NUMBER, ALL_INTEGER);
 		
 		expect:
 
-//		naturalComparator.compare(smaller, bigger) < 0
-		compToZero (naturalComparator, first, second, comparison) == true
+		//		naturalComparator.compare(smaller, bigger) < 0
+		compToZero (naturalComparator1, first, second, comparison) == true
 		compToZero (naturalComparator2, first, second, comparison2) == true
+		compToZero (naturalComparator3, first, second, comparison3) == true
+		compToZero (naturalComparator4, first, second, comparison4) == true
+		compToZero (naturalComparator5, first, second, comparison5) == true
+		compToZero (naturalComparator6, first, second, comparison6) == true
 		
 		where:
 
-		first		|	second 	| comparison 	| comparison2
-		"10.1"		| "10.10" 	| LESS 			| EQUAL
-		"10.123"	| "10.2" 	| GREATER 		| LESS
-		"-10.10"	| "-10.1" 	| GREATER 		| EQUAL
-		"-10.2"		| "-10.123" | LESS 			| LESS
-	
+		first		|	second 	| comparison 	| comparison2	| comparison3 	| comparison4	| comparison5 	| comparison6
+		"11"		| "11"	 	| EQUAL			| EQUAL			| EQUAL			| EQUAL			| EQUAL			| EQUAL
+		"111"		| "11"	 	| GREATER		| GREATER		| GREATER		| GREATER		| GREATER		| GREATER
+		"111"		| "4444" 	| LESS			| LESS			| LESS			| LESS			| LESS			| LESS
+		"10.1"		| "10.10" 	| LESS	 		| EQUAL			| LESS			| LESS			| EQUAL			| LESS
+		"10.123"	| "10.2" 	| GREATER 		| LESS			| LESS			| GREATER		| LESS			| LESS
+		"-10.10"	| "-10.1" 	| GREATER 		| EQUAL			| GREATER		| GREATER		| EQUAL			| GREATER
+		"-10.2"		| "-10.123" | LESS 			| GREATER		| GREATER		| LESS			| LESS			| LESS
+
 	}
-	
-	
 }

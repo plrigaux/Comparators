@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NaturalComparator implements Comparator<CharSequence> {
+public final class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
@@ -83,45 +83,78 @@ public class NaturalComparator implements Comparator<CharSequence> {
 	};
 
 	public enum Flags {
-		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, NODECIMAL
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, REAL_NUMBER, ALL_INTEGER
 	};
-
-	public NaturalComparator(Flags... flags) {
-		this(ASCII, flags);
-	}
 
 	private boolean pureNumbers;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public NaturalComparator(Collator collator, Flags... flags) {
-		this((Comparator) collator, flags);
-
-	}
 
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
 
 	final static String NUM_PAT = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
+	                         
 	final static String NUM_PATNODEC = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))";
+	
+	final static String PREFIX_REGEX = "(?:\\s)*";
+	final static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
+	final static String DEC_REGEX = "((\\.\\d++)(?!\\.\\d))?";
+	final static String NUM_REGEX = "0*([1-9]\\d*|0)";
 
 	final Pattern pattern;
 
-	public NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
+	private NaturalComparator() {
+		// Throw an exception if this ever *is* called
+	    throw new AssertionError("Instantiating utility class.");
+	}
+	
+	private NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
 		flagSet.addAll(Arrays.asList(flags));
 
+		if (flagSet.contains(Flags.SECONDARY)) {
+			flagSet.remove(PRIMARY);
+		} else {
+			flagSet.add(PRIMARY);
+		}
+		
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
+		
+		
+		StringBuilder regex = new StringBuilder(200);
+		
+		regex.append(PREFIX_REGEX);
+		
+		if( isAllInteger()) {
+			regex.append(NEG_REGEX);
+		}
+		
+		regex.append(NUM_REGEX);
 
-		String pat = isNoDecimal() ? NUM_PATNODEC : NUM_PAT;
+		if( isAllInteger()) {
+			regex.append(")");
+		}
+		
+		if( isRealNumber()) {
+			regex.append(DEC_REGEX);
+		}
+		
 
-		pattern = Pattern.compile(pat);
+		pattern = Pattern.compile(regex.toString());
 	}
 
-	// Just for tests
-	// List<TokenComparable> split(CharSequence s1) {
-	// Tokenizer splitter1 = new Tokenizer(this, s1);
-	// return splitter1.split();
-	// }
+	public static NaturalComparator getComparator(Flags... flags) {
+		return getComparator(ASCII, flags);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static NaturalComparator getComparator(Collator collator, Flags... flags) {
+		return getComparator((Comparator)collator, flags);
+	}
+	
+	public static NaturalComparator getComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
+		return new NaturalComparator(alphaComparator, flags);
+	}
 
 	public int compare(CharSequence s1, CharSequence s2) {
 
@@ -222,8 +255,12 @@ public class NaturalComparator implements Comparator<CharSequence> {
 		return flagSet.contains(SPACE_INSENSITVE2);
 	}
 
-	public boolean isNoDecimal() {
-		return flagSet.contains(Flags.NODECIMAL);
+	public boolean isRealNumber() {
+		return flagSet.contains(Flags.REAL_NUMBER);
+	}
+	
+	public boolean isAllInteger() {
+		return flagSet.contains(Flags.ALL_INTEGER);
 	}
 
 }

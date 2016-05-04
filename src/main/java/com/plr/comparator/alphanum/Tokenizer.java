@@ -105,16 +105,20 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	TokenComparable getNext() {
 		TokenComparable token = null;
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("toSplit:'{}'", toSplit);
-			for (int i = 0; i < matcher.groupCount(); i++) {
-				logger.debug("find {} Gr{}: '{}'", counter, i, matcher.group(i));
-			}
-			logger.debug("");
-		}
+	
 
 		if (!hasPrevious && !matcherFind) {
 			matcherFind = matcher.find();
+			
+			if (logger.isDebugEnabled() && matcherFind) {
+				logger.debug("toSplit:'{}'", toSplit);
+				for (int i = 0; i < matcher.groupCount(); i++) {
+					logger.debug("find {} Gr{}: '{}'", counter, i, matcher.group(i));
+				}
+				counter++;
+				logger.debug("");
+			}
+			
 			hasPrevious = true;
 		}
 
@@ -162,16 +166,23 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	private TokenComparable grabNumToken() {
 		TokenComparable token;
 		CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
-		CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(2), matcher.end(2));
 
 		// TODO remove the group for neg
-		boolean isNegative = matcher.start(1) != -1;
+		boolean isNegative = false;
+		int gr = 1;
 
+		if (naturalComparator.isAllInteger()) {
+			isNegative = matcher.start(gr++) != -1;
+		}
+
+		CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(gr), matcher.end(gr));
+
+		gr++;
 		// TODO try to find why there is a dot at front (+1)
 		CharSequence decimal = null;
 
-		if (matcher.groupCount() >= 3) {
-			int end3 = matcher.end(3);
+		if (matcher.groupCount() >= gr) {
+			int end3 = matcher.end(gr);
 			if (end3 != -1) {
 				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
 			}

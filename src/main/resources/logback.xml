@@ -10,7 +10,7 @@
 	</appender>
 
 
-	<logger name="com.plr.comparator.alphanum" level="INFO" />
+	<logger name="com.plr.comparator.alphanum" level="DEBUG" />
 
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
