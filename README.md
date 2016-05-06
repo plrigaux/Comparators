@@ -155,16 +155,6 @@ Comparator<String> comparator = naturalComparator.reverse();
 Here list of summaries
 
 
-| Case        | Description           | Example  |
-| ------------- |-------------| :-----:|
-| PRIMARY      | Look only at the number numeric value. Treat leading and trailing zeros as non significant. | `'Doc 5.doc'= 'Doc5.doc'`<br>`'Doc 5.doc' = 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
-|SECONDARY   | If the string are PRIMARY equal, the comparator looks white spaces and leading and trailing zeros around numbers.| `'Doc 5.doc' > 'Doc5.doc'`<br>`'Doc 5.doc' < 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
-<td>
-<td>
-'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc5.doc'<br>
-'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc05.doc'"<br>
-'Doc&nbsp;5.doc'&nbsp;<&nbsp;'Doc05.2.doc'"<br>
-
 
 
 <table>
@@ -172,53 +162,43 @@ Here list of summaries
 <tr><td>PRIMARY
 <td>Look only at the number numeric value. Treat leading and trailing zeros as non significant.
 <td>
-'Doc 5.doc' = 'Doc5.doc'<br>
-'Doc 5.doc' = 'Doc05.doc'<br>
-'Doc 5.doc' < 'Doc05.2.doc'<br>
-<table>
-<tr><th>Case<th>Description<th>Example
-<tr><td>PRIMARY
-<td>Look only at the number numeric value. Treat leading and trailing zeros as non significant.
-<td>
-'Doc 5.doc' = 'Doc5.doc'<br>
-'Doc 5.doc' = 'Doc05.doc'<br>
-'Doc 5.doc' < 'Doc05.2.doc'<br>
+<code>'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc5.doc'</code><br>
+<code>'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc05.doc'</code><br>
+<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.2.doc'</code><br>
 <tr><td>SECONDARY
+<td>If the string are <i>PRIMARY</i> equal, the comparator looks white spaces and leading and trailing zeros around numbers to differentiate them.<br>
+<br>
+This a can be useful is you want to sort in a definitive order similar string.
 <td>
-<td>
-'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc5.doc'<br>
-'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc05.doc'"<br>
-'Doc&nbsp;5.doc'&nbsp;<&nbsp;'Doc05.2.doc'"<br>
+<code>'Doc&nbsp;5.doc'&nbsp;&gt;&nbsp;'Doc5.doc'</code><br>
+<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.doc'</code><br>
+<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.2.doc'"</code><br>
 <tr><td>LTRIM
 <td>Ignore leading white spaces at the beginning and the end of the string.
-<td>
+<td> 
+<code>'Doc5.doc'&nbsp;=&nbsp;'&nbsp;&nbsp;&nbsp;Doc5.doc'</code><br>
 <tr><td>RTRIM
 <td>Ignore trailing white spaces at the beginning and the end of the string.
-<td>
+<td> <code>'Doc5.doc'&nbsp;=&nbsp;'Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;'</code><br>
 <tr><td>TRIM
 
 <td>Ignore leading and trailing white spaces at the beginning and the end of the string. 
-<br>
+<br><br>
 <i>Note</i>: Combination of LTRIM and RTRIM
 <td>
-<pre>
-'&nbsp;&nbsp;&nbsp;asdf'
-'asdf&nbsp;&nbsp;'
-'&nbsp;&nbsp;asdf&nbsp;&nbsp;&nbsp;&nbsp;'
-'asdf'
-</pre>
+<code>'Doc5.doc'&nbsp;=&nbsp;'&nbsp;&nbsp;Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;'</code><br>
 <tr><td>NEGATIVE_NUMBER
-<td>Treat the hyphen before the number as negative 
+<td>Treat the hyphen before the number as negative.
 <td>
-
+<code>'-5'&nbsp;&lt;&nbsp;'-4'</code><br>
 <tr><td>RATIONAL_NUMBER
 <td>Handle the portion after the dot '.' as decimal.
 <td>
-
+<code>'10.4'&nbsp;&lt;&nbsp;'10.45'</code><br>
 <tr><td>REAL_NUMBER
 <td>Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag.
 <td>
-
+<code>'-10.4'&nbsp;&gt;&nbsp;'-10.45'</code><br>
 </table>
 
 ## Diclaimer
