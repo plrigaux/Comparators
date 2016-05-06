@@ -157,21 +157,11 @@ Here list of summaries
 
 | Case        | Description           | Example  |
 | ------------- |-------------| :-----:|
-| PRIMARY      | Look only at the number numeric value. Treat leading and trailing zeros as non significant. | 'Doc 5.doc' = 'Doc5.doc'<br>
-'Doc 5.doc' = 'Doc05.doc'<br>
-'Doc 5.doc' < 'Doc05.2.doc'<br> |
+| PRIMARY      | Look only at the number numeric value. Treat leading and trailing zeros as non significant. | `'Doc 5.doc' = 'Doc5.doc'`<br>`'Doc 5.doc' = 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
 | col 2 is      | centered      |   $12 |
 | zebra stripes | are neat      |    $1 |
 
-+---------------+---------------+--------------------+
-| Fruit         | Price         | Advantages         |
-+===============+===============+====================+
-| Bananas       | first line\   | first line\        |
-|               | next line     | next line          |
-+---------------+---------------+--------------------+
-| Bananas       | first line\   | first line\        |
-|               | next line     | next line          |
-+---------------+---------------+--------------------+
+
 
 <table>
 <tr><th>Case<th>Description<th>Example
