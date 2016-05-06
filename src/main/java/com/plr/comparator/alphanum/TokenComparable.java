@@ -5,21 +5,23 @@ import java.util.Comparator;
 abstract public class TokenComparable implements Comparable<TokenComparable> {
 
 	final Comparator<CharSequence> comparator;
+	protected final NaturalComparator naturalComparator;
 
-	TokenComparable( Comparator<CharSequence> comparator) {
-		this.comparator = comparator;
+	TokenComparable(NaturalComparator naturalComparator) {
+		this.comparator = naturalComparator.getAlphaComparator();
+		this.naturalComparator = naturalComparator;
 	}
 
-	@Override
-	public int compareTo(TokenComparable other) {
+//	@Override
+//	public abstract int compareTo(TokenComparable other);
+
 	
-		if (isAllWhiteSpace() && other.isAllWhiteSpace()) {
-			return 0;
-		}
-		
-		return comparator.compare(getStr().toString(), other.getStr().toString());
+	public int compareTo(TokenComparable other) {
+		CharSequence s1 = getStr();
+		CharSequence s2 = other.getStr();
+		return comparator.compare(s1, s2);
 	}
-
+	
 	@Override
 	public String toString() {
 		return (isNumber() ? "N>" : "A>") + getStr().toString();

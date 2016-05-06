@@ -11,7 +11,7 @@ public class StringBuilderSpecial implements CharSequence, Comparable<StringBuil
      */
 	private int count;
     
-    StringBuilderSpecial(int size) {
+    StringBuilderSpecial(int size, int adf) {
     	value = new char[size];
     	count = 0;
     }

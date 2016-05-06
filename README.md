@@ -1,7 +1,7 @@
 # Natural Comparator
 
 
-This Java librairy performs 'natural order' comparisons of strings in Java. Copyright (C) 2016 by Pierre-Luc Rigaux plrigaux@gmail.com.
+This Java library performs 'natural order' comparisons of strings in Java. Copyright (C) 2016 by Pierre-Luc Rigaux plrigaux@gmail.com.
 
 
 It is based on the work of : 
@@ -65,7 +65,7 @@ The compatator compares numbers in the natural form order. Basically the order t
   
 ```
 
-Unlike some one liner scripts, the compator doesn't transform the numeric string into a numeric value. This have 2 benefits:
+Unlike some one liner scripts, the comparator doesn't transform the numeric string into a numeric value. This have 2 benefits:
 
 * Allows numbers beyong the limits of the language native num type
 * Increases calculation performance 
@@ -152,14 +152,51 @@ Comparator<String> comparator = naturalComparator.reverse();
 
 # Summary
 
+Here list of summaries
+
 <table>
-<tr><th>Case<th><th>example
-<tr><td>trim
-<td>Ignore white space at the begining and the end of the string
-<td>'&nbsp;&nbsp;&nbsp;asdf'<br>
-'asdf&nbsp;&nbsp;'<br>
-'&nbsp;&nbsp;asdf&nbsp;&nbsp;&nbsp;&nbsp;'<br>
-'asdf'<br>
+<tr><th>Case<th>Description<th>Example<th>Exemple
+<tr><td>PRIMARY
+<td>Look only at the number numeric value. Treat leading and trailing zeros as non significant.
+<td>
+<tr><td>SECONDARY
+<td>
+<td><pre>
+asdfs
+dsfsda asffasd asdf dfg sdfg sdgsdf dsgsdg 
+sdf
+asdf
+</pre>
+<tr><td>LTRIM
+<td>Ignore leading white spaces at the beginning and the end of the string.
+<td>
+<tr><td>RTRIM
+<td>Ignore trailing white spaces at the beginning and the end of the string.
+<td>
+<tr><td>TRIM
+
+<td>Ignore leading and trailing white spaces at the beginning and the end of the string. 
+<br>
+<i>Note</i>: Combination of LTRIM and RTRIM
+<td>
+<pre>
+'&nbsp;&nbsp;&nbsp;asdf'
+'asdf&nbsp;&nbsp;'
+'&nbsp;&nbsp;asdf&nbsp;&nbsp;&nbsp;&nbsp;'
+'asdf'
+</pre>
+<tr><td>NEGATIVE_NUMBER
+<td>Treat the hyphen before the number as negative 
+<td>
+
+<tr><td>RATIONAL_NUMBER
+<td>Handle the portion after the dot '.' as decimal.
+<td>
+
+<tr><td>REAL_NUMBER
+<td>Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag.
+<td>
+
 </table>
 
 ## Diclaimer

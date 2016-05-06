@@ -41,8 +41,8 @@ public class StringBuilderSpecial2 implements CharSequence, Comparable<StringBui
 
 		int k = 0;
 		while (k < lim) {
-			char c1 = value.charAt(k);
-			char c2 = o.value.charAt(k);
+			char c1 = this.charAt(k);
+			char c2 = o.charAt(k);
 			if (c1 != c2) {
 				return c1 - c2;
 			}

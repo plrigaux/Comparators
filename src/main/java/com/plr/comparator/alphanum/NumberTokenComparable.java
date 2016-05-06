@@ -1,8 +1,5 @@
 package com.plr.comparator.alphanum;
 
-import java.util.Comparator;
-
-
 public class NumberTokenComparable extends TokenComparable {
 
 	private final boolean isNegative;
@@ -10,8 +7,8 @@ public class NumberTokenComparable extends TokenComparable {
 	private final CharSequence decimal;
 	private final CharSequence str;
 
-	NumberTokenComparable(String str, Comparator<CharSequence> alphaComparator) {
-		super(alphaComparator);
+	NumberTokenComparable(String str, NaturalComparator naturalComparator) {
+		super(naturalComparator);
 		this.str = str;
 
 		int len = str.length();
@@ -61,8 +58,9 @@ public class NumberTokenComparable extends TokenComparable {
 		this.decimal = decimal;
 	}
 
-	NumberTokenComparable(boolean isNegative, CharSequence units, CharSequence decimal, CharSequence str, Comparator<CharSequence> comparator) {
-		super(comparator);
+	NumberTokenComparable(boolean isNegative, CharSequence units, CharSequence decimal, CharSequence str,
+			 NaturalComparator naturalComparator) {
+		super(naturalComparator);
 		this.isNegative = isNegative;
 		this.decimal = decimal;
 		this.units = units;
@@ -77,7 +75,7 @@ public class NumberTokenComparable extends TokenComparable {
 	@Override
 	public int compareTo(TokenComparable other) {
 		if (!other.isNumber()) {
-			return super.compareTo(other);
+			return -other.compareTo(this);
 		}
 
 		NumberTokenComparable otherNTC = (NumberTokenComparable) other;
@@ -126,22 +124,22 @@ public class NumberTokenComparable extends TokenComparable {
 
 		return result;
 	}
-	
-	//The one that have less leading zeros or space is the smallest
+
+	// The one that have less leading zeros or space is the smallest
 	@Override
 	public int compareLeadingZerosTo(TokenComparable other) {
 		if (!other.isNumber()) {
-			return super.compareTo(other);
+			return -other.compareTo(this);
 		}
-		
+
 		CharSequence thisStr = this.getStr();
 		CharSequence otherStr = other.getStr();
-		
+
 		int len1 = thisStr.length();
 		int len2 = otherStr.length();
-		
+
 		int result = len1 - len2;
-		
+
 		return result;
 	}
 

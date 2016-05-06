@@ -169,7 +169,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "test sort list ignore case" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(String.CASE_INSENSITIVE_ORDER);
+		NaturalComparator naturalComparator = NaturalComparator.getComparator(NaturalComparator.CASE_INSENSITIVE);
 
 		def expected = [
 			"zo1.doc",
@@ -408,6 +408,7 @@ class NaturalComparatorTest extends Specification {
 		"1-02"		| "1- 2" 		| EQUAL			| GREATER	
 		"1-02"		| "1- 2 Tail" 	| LESS			| LESS
 		"1-2 Tail"	| "1- 2" 		| GREATER		| GREATER
+		"Doc    5"	| "Doc 5" 		| EQUAL			| LESS
 	
 
 	}
@@ -482,9 +483,11 @@ class NaturalComparatorTest extends Specification {
 
 	def "Mutiple cases Numbers"() {
 		given:
+		
+		NaturalComparator nc = NaturalComparator.getComparator(NaturalComparator.ASCII);
 
-		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, NaturalComparator.ASCII);
-		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, NaturalComparator.ASCII);
+		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, nc);
+		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, nc);
 
 		expect:
 
@@ -571,7 +574,7 @@ class NaturalComparatorTest extends Specification {
 		"20"				| ["20"]
 		"2"					| ["2"]
 		"-20"				| ["-20"]
-		" -40"				| [" -40"]
+		" -40"				| [" ","-40"]
 		"-20.234"			| ["-20.234"]
 
 		//comma or hyphen in string
@@ -604,11 +607,11 @@ class NaturalComparatorTest extends Specification {
 		"0.3000"			| ["0.3000"]
 
 		//spaces
-		"pics 5"			| ["pics", " 5"]
-		"pics    5"			| ["pics", "    5"]
-		"pics 5 test"		| ["pics", " 5", " test"]
-		"pics    5 6"		| ["pics", "    5", " 6"]
-		"pics    5 6 "		| ["pics", "    5", " 6", " "]
+		"pics 5"			| ["pics ", "5"]
+		"pics    5"			| ["pics    ", "5"]
+		"pics 5 test"		| ["pics ", "5", " test"]
+		"pics    5 6"		| ["pics    ", "5", " ", "6"]
+		"pics    5 6 "		| ["pics    ", "5", " ", "6", " "]
 		"pics"				| ["pics"]
 
 
@@ -629,7 +632,8 @@ class NaturalComparatorTest extends Specification {
 
 		"Ab Cd"		| "Ab\n\r\tCd   "
 		" ab Cd"	| "  a b" + System.getProperty("line.separator") + "Cd "
-		"Ab Cd"		| "Ab\n\r\tCd \u00A0  "
+		"Ab Cd"		| "Ab\n\r\tCd   "
+		"Ab56 Cd"		| "Ab\n\r\t56Cd   "
 	}
 
 

@@ -1,10 +1,11 @@
 package com.plr.comparator.alphanum;
 
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.LTRIM;
+import static com.plr.comparator.alphanum.NaturalComparator.Flags.PRIMARY;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.RTRIM;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE;
 import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE2;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.*;
+import static com.plr.comparator.alphanum.NaturalComparator.Flags.TRIM;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -46,21 +47,12 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
-	
 	final private Comparator<CharSequence> alphaComparator;
-
-	// TODO make the regex not capture the point
-	// final static String NUM_PAT =
-	// "(?:\\s)*((?:^|\\s)[-])?0*([1-9]\\d*|0)((\\.\\d++)(?!\\.\\d))?";
-
-	// Compare without space
-	// final static String NUM_PAT =
-	// "\\s+|(?:(?:(?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
 
 	final static public Comparator<CharSequence> ASCII = new Comparator<CharSequence>() {
 		@Override
 		public int compare(CharSequence o1, CharSequence o2) {
-		
+
 			int len1 = o1.length();
 			int len2 = o2.length();
 			int lim = Math.min(len1, len2);
@@ -83,32 +75,76 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		}
 	};
 
+	public static final Comparator<CharSequence> CASE_INSENSITIVE = new Comparator<CharSequence>() {
+
+		public int compare(CharSequence s1, CharSequence s2) {
+			int n1 = s1.length();
+			int n2 = s2.length();
+			int min = Math.min(n1, n2);
+			for (int i = 0; i < min; i++) {
+				char c1 = s1.charAt(i);
+				char c2 = s2.charAt(i);
+				if (c1 != c2) {
+					c1 = Character.toUpperCase(c1);
+					c2 = Character.toUpperCase(c2);
+					if (c1 != c2) {
+						c1 = Character.toLowerCase(c1);
+						c2 = Character.toLowerCase(c2);
+						if (c1 != c2) {
+							// No overflow because of numeric promotion
+							return c1 - c2;
+						}
+					}
+				}
+			}
+			return n1 - n2;
+		}
+	};
+
 	public enum Flags {
-		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2, REAL_NUMBER, NEGATIVE_NUMBER,
+		/**
+		 * Look only at the number numeric value. Treat leading and tailling
+		 * zeros as non sinificant.
+		 */
+		PRIMARY, SECONDARY,
+
+		/** Ignore white spaces at the begining the string */
+		LTRIM,
+
+		/** Ignore white spaces at the end of the string */
+		RTRIM,
+
+		/** Ignore white spaces at the begining and the end of the string */
+		TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2,
+
+		/** Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag */
+		REAL_NUMBER,
+
+		/** Treat the hyphen before the number as negative. */
+		NEGATIVE_NUMBER,
+
+		/** Handle the portion after the dot '.' as decimal. */
 		RATIONAL_NUMBER
 	};
 
 	private boolean pureNumbers;
 
-
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
 
-	final static String NUM_PAT = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
-	                         
-	final static String NUM_PATNODEC = "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))";
-	
-	final static String PREFIX_REGEX = "(?:\\s)*";
-	final static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
-	final static String DEC_REGEX = "((\\.\\d++)(?!\\.\\d))?";
-	final static String NUM_REGEX = "0*([1-9]\\d*|0)";
+	// final private static String NUM_PAT =
+	// "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
+
+	final private static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
+	final private static String DEC_REGEX = "((\\.\\d++)(?!\\.\\d))?";
+	final private static String NUM_REGEX = "0*([1-9]\\d*|0)";
 
 	final Pattern pattern;
 
 	private NaturalComparator() {
 		// Throw an exception if this ever *is* called
-	    throw new AssertionError("Instantiating utility class.");
+		throw new AssertionError("Instantiating utility class.");
 	}
-	
+
 	private NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
@@ -119,28 +155,31 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		} else {
 			flagSet.add(PRIMARY);
 		}
-		
+
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
-		
-		
+
 		StringBuilder regex = new StringBuilder(200);
-		
-		regex.append(PREFIX_REGEX);
-		
-		if( isNegativeNumber()) {
+
+		// if (isSpaceInsensitve() || isSpaceInsensitve2()) {
+		// regex.append(WSPACE_REGEX);
+		// regex.append("|");
+		// }
+
+		if (isNegativeNumber()) {
 			regex.append(NEG_REGEX);
 		}
-		
+
 		regex.append(NUM_REGEX);
 
-		if( isNegativeNumber()) {
+		if (isNegativeNumber()) {
 			regex.append(")");
 		}
-		
-		if( isRationalNumber()) {
+
+		if (isRationalNumber()) {
 			regex.append(DEC_REGEX);
 		}
-		
+
+		logger.debug("Regex: \"{}\"", regex);
 
 		pattern = Pattern.compile(regex.toString());
 	}
@@ -148,12 +187,12 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	public static NaturalComparator getComparator(Flags... flags) {
 		return getComparator(ASCII, flags);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static NaturalComparator getComparator(Collator collator, Flags... flags) {
-		return getComparator((Comparator)collator, flags);
+		return getComparator((Comparator) collator, flags);
 	}
-	
+
 	public static NaturalComparator getComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		return new NaturalComparator(alphaComparator, flags);
 	}
@@ -260,7 +299,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	public boolean isRationalNumber() {
 		return flagSet.contains(Flags.RATIONAL_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
 	}
-	
+
 	public boolean isNegativeNumber() {
 		return flagSet.contains(Flags.NEGATIVE_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
 	}

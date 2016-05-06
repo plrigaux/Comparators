@@ -13,7 +13,6 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	final private NaturalComparator naturalComparator;
 
 	private final CharSequence toSplit;
-	private final CharSequence original;
 	final private Matcher matcher;
 
 	private int from = 0;
@@ -24,92 +23,20 @@ public class Tokenizer implements Iterator<TokenComparable> {
 
 	Tokenizer(NaturalComparator naturalComparator, CharSequence toSplit) {
 		this.naturalComparator = naturalComparator;
-
-		this.original = toSplit;
-
-		if (naturalComparator.isSpaceInsensitve()) {
-			this.toSplit = spaceInsensible(toSplit);
-		} else if (naturalComparator.isSpaceInsensitve2()) {
-			this.toSplit = spaceInsensible2(toSplit);
-		} else {
-			this.toSplit = toSplit;
-		}
+		this.toSplit = toSplit;
 
 		matcher = naturalComparator.pattern.matcher(toSplit);
 
 		trimMatcher();
 	}
 
-	// List<TokenComparable> split() {
-	//
-	// List<TokenComparable> list = new ArrayList<>();
-	//
-	// matcher.reset();
-	// matcher.region(from, to);
-	//
-	// int start = matcher.regionStart();
-	//
-	// int j = 0;
-	// while (matcher.find()) {
-	//
-	// if (logger.isDebugEnabled()) {
-	// logger.debug("toSplit:'{}'", toSplit);
-	// for (int i = 0; i < matcher.groupCount(); i++) {
-	// logger.debug("find {} Gr{}: '{}'", j, i, matcher.group(i));
-	// }
-	// j++;
-	// logger.debug("");
-	// }
-	//
-	// if (start != matcher.start()) {
-	// CharSequence prev = new StringBuilderSpecial2(toSplit, start,
-	// matcher.start());
-	// list.add(new AlphaTokenComparable(prev,
-	// naturalComparator.getAlphaComparator()));
-	// }
-	//
-	// CharSequence wholeStr = new StringBuilderSpecial2(toSplit,
-	// matcher.start(0), matcher.end(0));
-	// CharSequence number = new StringBuilderSpecial2(toSplit,
-	// matcher.start(2), matcher.end(2));
-	//
-	// // TODO remove the group for neg
-	// boolean isNegative = matcher.start(1) != -1;
-	//
-	// // TODO try to find why there is a dot at front (+1)
-	// CharSequence decimal = null;
-	//
-	// int end3 = matcher.end(3);
-	// if (end3 != -1) {
-	// decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
-	// }
-	//
-	// list.add(new NumberTokenComparable(isNegative, number, decimal, wholeStr,
-	// naturalComparator.getAlphaComparator()));
-	//
-	// start = matcher.end();
-	// }
-	//
-	// if (start != matcher.regionEnd()) {
-	// CharSequence last = toSplit.subSequence(start, matcher.regionEnd());
-	// list.add(new AlphaTokenComparable(last,
-	// naturalComparator.getAlphaComparator()));
-	// }
-	//
-	// return list;
-	// }
-
 	private int counter = 0;
 	private boolean hasPrevious = false;
 
 	TokenComparable getNext() {
-		TokenComparable token = null;
-
-	
-
 		if (!hasPrevious && !matcherFind) {
 			matcherFind = matcher.find();
-			
+
 			if (logger.isDebugEnabled() && matcherFind) {
 				logger.debug("toSplit:'{}'", toSplit);
 				for (int i = 0; i < matcher.groupCount(); i++) {
@@ -118,9 +45,11 @@ public class Tokenizer implements Iterator<TokenComparable> {
 				counter++;
 				logger.debug("");
 			}
-			
+
 			hasPrevious = true;
 		}
+
+		TokenComparable token = null;
 
 		if (matcherFind) {
 			if (hasPrevious) {
@@ -137,7 +66,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		} else {
 			// No match at all
 			if (from == start) {
-				token = new AlphaTokenComparable(toSplit, naturalComparator.getAlphaComparator());
+				token = new AlphaTokenComparable(toSplit, naturalComparator);
 				counter++;
 				start = to;
 			}
@@ -158,41 +87,43 @@ public class Tokenizer implements Iterator<TokenComparable> {
 
 	private TokenComparable grabAlphaToken(CharSequence prev) {
 		TokenComparable token;
-		token = new AlphaTokenComparable(prev, naturalComparator.getAlphaComparator());
+		token = new AlphaTokenComparable(prev, naturalComparator);
 		counter++;
 		return token;
 	}
 
 	private TokenComparable grabNumToken() {
-		TokenComparable token;
+		TokenComparable token = null;
+
 		CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
 
 		// TODO remove the group for neg
 		boolean isNegative = false;
-		int gr = 1;
+		int groupIndex = 1;
 
 		if (naturalComparator.isNegativeNumber()) {
-			isNegative = matcher.start(gr++) != -1;
+			isNegative = matcher.start(groupIndex++) != -1;
 		}
 
-		CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(gr), matcher.end(gr));
+		CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(groupIndex), matcher.end(groupIndex));
 
-		gr++;
+		groupIndex++;
 		// TODO try to find why there is a dot at front (+1)
 		CharSequence decimal = null;
 
-		if (matcher.groupCount() >= gr) {
-			int end3 = matcher.end(gr);
+		if (matcher.groupCount() >= groupIndex) {
+			int end3 = matcher.end(groupIndex);
 			if (end3 != -1) {
 				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
 			}
 		}
 
-		token = new NumberTokenComparable(isNegative, number, decimal, wholeStr,
-				naturalComparator.getAlphaComparator());
+		token = new NumberTokenComparable(isNegative, number, decimal, wholeStr, naturalComparator);
+
 		counter++;
 		start = matcher.end();
 		matcherFind = false;
+
 		return token;
 	}
 
@@ -228,51 +159,6 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		return i + 1;
 	}
 
-	private CharSequence spaceInsensible(CharSequence toSplit) {
-		int l = toSplit.length();
-		StringBuilderSpecial sb = new StringBuilderSpecial(l);
-		int i = 0;
-
-		while (i < l) {
-			char ch = toSplit.charAt(i);
-			if (!Character.isWhitespace(ch)) {
-				sb.append(ch);
-			}
-			i++;
-		}
-		return sb;
-	}
-
-	private CharSequence spaceInsensible2(CharSequence toSplit) {
-		int l = toSplit.length();
-
-		l = _rtrim(toSplit);
-
-		StringBuilderSpecial sb = new StringBuilderSpecial(l);
-
-		int i = _rtrim(toSplit);
-
-		boolean isWhitespace = true;
-		boolean wasWhitespace = false;
-		while (i < l) {
-			char ch = toSplit.charAt(i);
-
-			isWhitespace = Character.isWhitespace(ch);
-			if (!isWhitespace) {
-				sb.append(ch);
-			} else if (!wasWhitespace) {
-				sb.append(' ');
-			}
-			wasWhitespace = isWhitespace;
-			i++;
-		}
-		return sb;
-	}
-
-	public CharSequence getOriginal() {
-		return original;
-	}
-
 	TokenComparable tokenComparableTemp = null;
 
 	@Override
@@ -296,5 +182,4 @@ public class Tokenizer implements Iterator<TokenComparable> {
 			return getNext();
 		}
 	}
-
 }
