@@ -1,11 +1,11 @@
-package com.plr.comparator.alphanum;
+package com.plr.comparator.natural;
 
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.LTRIM;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.PRIMARY;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.RTRIM;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.SPACE_INSENSITVE2;
-import static com.plr.comparator.alphanum.NaturalComparator.Flags.TRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.LTRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.PRIMARY;
+import static com.plr.comparator.natural.NaturalComparator.Flags.RTRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_INSENSITVE;
+import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_INSENSITVE2;
+import static com.plr.comparator.natural.NaturalComparator.Flags.TRIM;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -43,6 +43,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.plr.comparator.CaseInsensitive;
+
 public final class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
@@ -75,31 +77,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		}
 	};
 
-	public static final Comparator<CharSequence> CASE_INSENSITIVE = new Comparator<CharSequence>() {
-
-		public int compare(CharSequence s1, CharSequence s2) {
-			int n1 = s1.length();
-			int n2 = s2.length();
-			int min = Math.min(n1, n2);
-			for (int i = 0; i < min; i++) {
-				char c1 = s1.charAt(i);
-				char c2 = s2.charAt(i);
-				if (c1 != c2) {
-					c1 = Character.toUpperCase(c1);
-					c2 = Character.toUpperCase(c2);
-					if (c1 != c2) {
-						c1 = Character.toLowerCase(c1);
-						c2 = Character.toLowerCase(c2);
-						if (c1 != c2) {
-							// No overflow because of numeric promotion
-							return c1 - c2;
-						}
-					}
-				}
-			}
-			return n1 - n2;
-		}
-	};
+	public static final Comparator<CharSequence> CASE_INSENSITIVE = new CaseInsensitive();
 
 	public enum Flags {
 		/**
@@ -159,11 +137,6 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
 
 		StringBuilder regex = new StringBuilder(200);
-
-		// if (isSpaceInsensitve() || isSpaceInsensitve2()) {
-		// regex.append(WSPACE_REGEX);
-		// regex.append("|");
-		// }
 
 		if (isNegativeNumber()) {
 			regex.append(NEG_REGEX);
@@ -259,7 +232,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 				}
 			}
 
-			if (result == 0 && !isSpaceInsensitve() && !isSpaceInsensitve2()) {
+			if (result == 0 && !isSpaceInsensitve() && !isSpaceCollapseInsensitve()) {
 				result = alphaComparator.compare(s1, s2);
 			}
 		}
@@ -292,7 +265,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		return flagSet.contains(SPACE_INSENSITVE);
 	}
 
-	public boolean isSpaceInsensitve2() {
+	public boolean isSpaceCollapseInsensitve() {
 		return flagSet.contains(SPACE_INSENSITVE2);
 	}
 

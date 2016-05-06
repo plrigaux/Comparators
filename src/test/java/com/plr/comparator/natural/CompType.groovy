@@ -1,4 +1,4 @@
-package com.plr.comparator.alphanum
+package com.plr.comparator.natural
 
 enum CompType {
 	GREATER, LESS, EQUAL

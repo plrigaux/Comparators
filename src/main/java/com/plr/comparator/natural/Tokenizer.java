@@ -1,4 +1,4 @@
-package com.plr.comparator.alphanum;
+package com.plr.comparator.natural;
 
 import java.util.Iterator;
 import java.util.regex.Matcher;

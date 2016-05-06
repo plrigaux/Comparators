@@ -1,4 +1,4 @@
-package com.plr.comparator.alphanum;
+package com.plr.comparator.natural;
 
 public class StringBuilderSpecial implements CharSequence, Comparable<StringBuilderSpecial> {
     /**
