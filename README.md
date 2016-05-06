@@ -157,9 +157,13 @@ Here list of summaries
 
 | Case        | Description           | Example  |
 | ------------- |-------------| :-----:|
-| PRIMARY      | Look only at the number numeric value. Treat leading and trailing zeros as non significant. | `'Doc 5.doc' = 'Doc5.doc'`<br>`'Doc 5.doc' = 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| PRIMARY      | Look only at the number numeric value. Treat leading and trailing zeros as non significant. | `'Doc 5.doc'= 'Doc5.doc'`<br>`'Doc 5.doc' = 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
+|SECONDARY   | If the string are PRIMARY equal, the comparator looks white spaces and leading and trailing zeros around numbers.| `'Doc 5.doc' > 'Doc5.doc'`<br>`'Doc 5.doc' < 'Doc05.doc'`<br> `'Doc 5.doc' < 'Doc05.2.doc'`<br> |
+<td>
+<td>
+'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc5.doc'<br>
+'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc05.doc'"<br>
+'Doc&nbsp;5.doc'&nbsp;<&nbsp;'Doc05.2.doc'"<br>
 
 
 
