@@ -199,6 +199,14 @@ This a can be useful is you want to sort in a definitive order similar string.
 <td>Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag.
 <td>
 <code>'-10.4'&nbsp;&gt;&nbsp;'-10.45'</code><br>
+<tr><td>SPACE_INSENSITVE
+<td>Ignore  white spaces in string.
+<td><code>"abc"	= " a b&nbsp;&nbsp;c "</code><br>
+		<code>"  \n   abc  \n"	= " a b   c "</code><br>
+<tr><td>	SPACE_REPETITION_INSENSITVE	
+<td> Ignore  white spaces repetition in string.
+<td><code>"ab c"	= "ab   c"</code><br>
+<code>"abc"	!= "ab   c"</code><br>
 </table>
 
 ## Diclaimer

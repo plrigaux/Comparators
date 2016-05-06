@@ -4,7 +4,7 @@ import static com.plr.comparator.natural.NaturalComparator.Flags.LTRIM;
 import static com.plr.comparator.natural.NaturalComparator.Flags.PRIMARY;
 import static com.plr.comparator.natural.NaturalComparator.Flags.RTRIM;
 import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_INSENSITVE;
-import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_INSENSITVE2;
+import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_REPETITION_INSENSITVE;
 import static com.plr.comparator.natural.NaturalComparator.Flags.TRIM;
 
 import java.text.Collator;
@@ -57,19 +57,25 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	public enum Flags {
 		/**
-		 * Look only at the number numeric value. Treat leading and tailling
-		 * zeros as non sinificant.
+		 * Look only at the number numeric value. Treat leading and tailing
+		 * zeros as non significant.
 		 */
 		PRIMARY, SECONDARY,
 
-		/** Ignore white spaces at the begining the string */
+		/** Ignore white spaces at the beginning the string */
 		LTRIM,
 
 		/** Ignore white spaces at the end of the string */
 		RTRIM,
 
 		/** Ignore white spaces at the begining and the end of the string */
-		TRIM, SPACE_INSENSITVE, SPACE_INSENSITVE2,
+		TRIM, 
+		
+		/** Ignore string white spaces */
+		SPACE_INSENSITVE, 
+		
+		/** Ignore string white spaces repetition */
+		SPACE_REPETITION_INSENSITVE,
 
 		/** Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag */
 		REAL_NUMBER,
@@ -242,7 +248,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	}
 
 	public boolean isSpaceCollapseInsensitve() {
-		return flagSet.contains(SPACE_INSENSITVE2);
+		return flagSet.contains(SPACE_REPETITION_INSENSITVE);
 	}
 
 	public boolean isRationalNumber() {
