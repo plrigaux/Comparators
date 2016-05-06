@@ -2,9 +2,9 @@ package com.plr.comparator;
 
 import java.util.Comparator;
 
-public class CaseInsensitive implements Comparator<CharSequence> {
+public class CaseInsensitiveComparator implements Comparator<CharSequence> {
 
-	private final static CaseInsensitive instance = new CaseInsensitive();
+	private final static CaseInsensitiveComparator instance = new CaseInsensitiveComparator();
 
 	public int compare(CharSequence s1, CharSequence s2) {
 		int n1 = s1.length();
@@ -29,7 +29,7 @@ public class CaseInsensitive implements Comparator<CharSequence> {
 		return n1 - n2;
 	}
 
-	public static CaseInsensitive getInstance() {
+	public static CaseInsensitiveComparator getInstance() {
 		return instance;
 	}
 

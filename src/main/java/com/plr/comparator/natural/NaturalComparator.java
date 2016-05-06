@@ -43,7 +43,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.plr.comparator.CaseInsensitive;
+import com.plr.comparator.AsciiComparator;
+import com.plr.comparator.CaseInsensitiveComparator;
 
 public final class NaturalComparator implements Comparator<CharSequence> {
 
@@ -51,33 +52,8 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	final private Comparator<CharSequence> alphaComparator;
 
-	final static public Comparator<CharSequence> ASCII = new Comparator<CharSequence>() {
-		@Override
-		public int compare(CharSequence o1, CharSequence o2) {
-
-			int len1 = o1.length();
-			int len2 = o2.length();
-			int lim = Math.min(len1, len2);
-
-			int k = 0;
-			int result = 0;
-			while (k < lim) {
-				char ss1 = o1.charAt(k);
-				char ss2 = o2.charAt(k);
-
-				result = ss1 - ss2;
-
-				if (result != 0) {
-					return result;
-				}
-				k++;
-			}
-
-			return result;
-		}
-	};
-
-	public static final Comparator<CharSequence> CASE_INSENSITIVE = new CaseInsensitive();
+	final static public Comparator<CharSequence> ASCII = AsciiComparator.getInstance();
+	final static public Comparator<CharSequence> CASE_INSENSITIVE = CaseInsensitiveComparator.getInstance();
 
 	public enum Flags {
 		/**

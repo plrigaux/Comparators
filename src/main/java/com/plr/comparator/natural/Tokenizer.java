@@ -81,7 +81,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	}
 
 	private TokenComparable grabAlphaToken(int beg, int end) {
-		CharSequence prev = new StringBuilderSpecial2(toSplit, beg, end);
+		CharSequence prev = new StringBuilderSpecial(toSplit, beg, end);
 		return grabAlphaToken(prev);
 	}
 
@@ -95,7 +95,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	private TokenComparable grabNumToken() {
 		TokenComparable token = null;
 
-		CharSequence wholeStr = new StringBuilderSpecial2(toSplit, matcher.start(0), matcher.end(0));
+		CharSequence wholeStr = new StringBuilderSpecial(toSplit, matcher.start(0), matcher.end(0));
 
 		// TODO remove the group for neg
 		boolean isNegative = false;
@@ -105,7 +105,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 			isNegative = matcher.start(groupIndex++) != -1;
 		}
 
-		CharSequence number = new StringBuilderSpecial2(toSplit, matcher.start(groupIndex), matcher.end(groupIndex));
+		CharSequence number = new StringBuilderSpecial(toSplit, matcher.start(groupIndex), matcher.end(groupIndex));
 
 		groupIndex++;
 		// TODO try to find why there is a dot at front (+1)
@@ -114,7 +114,7 @@ public class Tokenizer implements Iterator<TokenComparable> {
 		if (matcher.groupCount() >= groupIndex) {
 			int end3 = matcher.end(groupIndex);
 			if (end3 != -1) {
-				decimal = new StringBuilderSpecial2(toSplit, matcher.start(3) + 1, end3);
+				decimal = new StringBuilderSpecial(toSplit, matcher.start(3) + 1, end3);
 			}
 		}
 

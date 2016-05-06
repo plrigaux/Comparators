@@ -4,16 +4,15 @@ public class StringBuilderSpecial implements CharSequence, Comparable<StringBuil
     /**
      * The value is used for character storage.
      */
-	private char[] value;
+	private CharSequence value;
 
-    /**
-     * The count is the number of characters used.
-     */
-	private int count;
-    
-    StringBuilderSpecial(int size, int adf) {
-    	value = new char[size];
-    	count = 0;
+	private final int count;
+	private final int start;
+	
+    StringBuilderSpecial(CharSequence charSequence, int start, int end) {
+    	value = charSequence;
+    	this.start = start;
+    	this.count = end - start;
     }
     
 	@Override
@@ -23,12 +22,12 @@ public class StringBuilderSpecial implements CharSequence, Comparable<StringBuil
 
 	@Override
 	public char charAt(int index) {
-		return value[index];
+		return value.charAt(start + index);
 	}
 
 	@Override
 	public CharSequence subSequence(int start, int end) {
-		return new String(value, start, end);
+		return new StringBuilderSpecial(value, start, end);
 	}
 
 	@Override
@@ -40,8 +39,8 @@ public class StringBuilderSpecial implements CharSequence, Comparable<StringBuil
 
 		int k = 0;
 		while (k < lim) {
-			char c1 = value[k];
-			char c2 = o.value[k];
+			char c1 = this.charAt(k);
+			char c2 = o.charAt(k);
 			if (c1 != c2) {
 				return c1 - c2;
 			}
@@ -50,13 +49,10 @@ public class StringBuilderSpecial implements CharSequence, Comparable<StringBuil
 		return len1 - len2;
 	}
 
-	public void append(char c) {
-		value[count++] = c;
-	}
 	
 	@Override
 	public String toString() {
-		return new String(value, 0, count);
+		return new StringBuilder(this).toString();
 	}
 
 }
