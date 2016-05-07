@@ -47,7 +47,6 @@ a standard sort, this algorithm sorts numbers in numeric order.
 The comparator compares numbers in the natural form order. Basically the order that we learned at school.
 
 ```
-
  0 < 1 < 3 < 10 < 23 < 134 < 123454634563472345345653456347
   
 ```
@@ -63,26 +62,32 @@ This have 2 benefits:
 The comparator takes case of strings representing negative numbers. Which means that it 
 considers that "-10" is smaller than "-1".
 
-It considers a negative number if the string starts with an hyphen ('-') or there is a whitespace before the hyphen. 
+It considers a negative number if an hyphen ('-') is ahead a digit and if the hyphen:
 
-Negative: "-456", " -43", "test  -467"
+1. is at the begin of the string OR
+1. there is a whitespace before the hyphen. 
 
-Not negative: "Something-45", "123-456" 
+```
+"-456", " -43", "test  -467"
+```
+
+If those conditions aren't met, we can consider the hyphen as a mere separator.
+
+```
+"Something-45", "123-456" 
+```
 
 ### Decimal numbers
 
 The comparator takes also care of the decimal part of the number. Honestly, I don't know in real life when it can be useful, never the less for sake of consistency I decided to include this feature.
 
 ```
-
- 0 < 1 < 3 < 10 < 23 < 134 < 123454634563472345345653456347
- 
- 
+"0.3" < "0.33" < "3.456456345634563423467" < "10" 
 ```
 
 ### Leading and tailing zeros
 
-As you know the leading and tailing zeros have no numerical significance, but it may have an aesthetic one. The comparator will ignore leading and tailing zeros if PRIMARY mode chosen.
+As you know the leading and tailing zeros have no numerical significance, but it may have an aesthetic one. Zero padding can also be used to sort numerical value in natural order. The comparator will ignore leading and tailing zeros if PRIMARY mode chosen.
 
 ## Space insensitive
 
