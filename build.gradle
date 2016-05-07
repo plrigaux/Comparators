@@ -34,13 +34,6 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 }
 
-//Compile groovy sources in java directories. 
-sourceSets {
-	test {
-		groovy { srcDirs = ['src/test/java'] }
-	}
-}
-
 test {
 	systemProperties 'property': 'value'
 	//testLogging { // Show that tests are run in the command-line output

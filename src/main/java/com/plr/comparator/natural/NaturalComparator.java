@@ -119,6 +119,10 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
 
 		StringBuilder regex = new StringBuilder(200);
+		
+//		if (pureNumbers) {
+//			regex.append("\\s*");
+//		}
 
 		if (isNegativeNumber()) {
 			regex.append(NEG_REGEX);
@@ -134,6 +138,10 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			regex.append(DEC_REGEX);
 		}
 
+//		if (pureNumbers) {
+//			regex.append("\\s*");
+//		}
+		
 		logger.debug("Regex: \"{}\"", regex);
 
 		pattern = Pattern.compile(regex.toString());

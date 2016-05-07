@@ -13,7 +13,7 @@ This [article](http://blog.codinghorror.com/sorting-for-humans-natural-sort-orde
 
 ## Description
 
-As humans we sort strings diffrently than computers. This librairy helps to sort string in natural order. The natural order is the way humans would sort elements contrary as the default computer sorting order wich follow the "unnatural" ASCII order.
+As humans we sort strings differently than computers. This library helps to sort string in natural order. The natural order is the way humans would sort elements contrary as the default computer sorting order which follow the _unnatural_ ASCII order.
 
 "Natural sort" is the widely-used term for sorting "image9.jpg" as being less than "image10.jpg". it is "natural" because it is how a human being would sort them, as opposed to the unnatural "ascii-betical" sorting that computers do by default. codinghorror.com/blog/archives/001018.html – Kip Aug 11 '09 at 19:28
 
@@ -24,40 +24,27 @@ The Alphanum Algorithm is an improved sorting algorithm for strings
 containing numbers.  Instead of sorting numbers in ASCII order like
 a standard sort, this algorithm sorts numbers in numeric order.
 
-<table>
-<tr><th>ASCII Order<th>Natural Order</tr>
-<tr><td>
-     z101.doc<br>     
-     z4.doc<br>
-     z102.doc<br>     
-     z5.doc<br>    
-     z1.doc<br>
-     z11.doc<br>    
-     z6.doc<br>    
-     z2.doc<br>
-     z12.doc<br>
-     </td>
-     <td>
-     z101.doc<br>     
-     z4.doc<br>
-     z102.doc<br>     
-     z5.doc<br>    
-     z1.doc<br>
-     z11.doc<br>    
-     z6.doc<br>    
-     z2.doc<br>
-     z12.doc<br>
-     </tr>
-</table>
+|ASCII Order   | Natural Order   |
+|--------------|-----------------|
+|     z101.doc |     z101.doc    |
+|     z4.doc   |     z4.doc      |
+|     z102.doc |     z102.doc    |
+|     z5.doc   |     z5.doc      |
+|     z1.doc   |     z1.doc      |
+|     z11.doc  |     z11.doc     |
+|     z6.doc   |     z6.doc      |
+|     z2.doc   |     z2.doc      |
+|     z12.doc  |     z12.doc     |
+
 
 
 1. Negative number
 2. Space insensitive
-1. Switch betwwen collator
+1. Switch between collator
 
 ## Numbers
 
-The compatator compares numbers in the natural form order. Basically the order that we learnt at school.
+The comparator compares numbers in the natural form order. Basically the order that we learned at school.
 
 ```
 
@@ -65,24 +52,26 @@ The compatator compares numbers in the natural form order. Basically the order t
   
 ```
 
-Unlike some one liner scripts, the comparator doesn't transform the numeric string into a numeric value. This have 2 benefits:
+Unlike some one liner scripts, the comparator doesn't transform the numeric string into a numeric value. 
+This have 2 benefits:
 
-* Allows numbers beyong the limits of the language native num type
+* Allows numbers beyond the limits of the language native numeric type
 * Increases calculation performance 
 
 ### Negative numbers
 
-The comparator takes case of strings representing negative numbers. Which means that it considers that "-10" is smaller than "-1".
+The comparator takes case of strings representing negative numbers. Which means that it 
+considers that "-10" is smaller than "-1".
 
-It is consider a negative number if the string starts with an hyphen ('-') or there is a whitespace before the hyphen. 
+It considers a negative number if the string starts with an hyphen ('-') or there is a whitespace before the hyphen. 
 
 Negative: "-456", " -43", "test  -467"
 
-Not negative: "Something-45" 
+Not negative: "Something-45", "123-456" 
 
 ### Decimal numbers
 
-The comparator takes also care of the decimal part of the number. Honestly, I don't know in real life when it can be usefull never the less for sake of consistency I decide to include this feature.
+The comparator takes also care of the decimal part of the number. Honestly, I don't know in real life when it can be useful, never the less for sake of consistency I decided to include this feature.
 
 ```
 
@@ -93,7 +82,7 @@ The comparator takes also care of the decimal part of the number. Honestly, I do
 
 ### Leading and tailing zeros
 
-As you know the leading and tailing zeros have no numerical significance, but it may have an aestetic one. The comparator will ignore leading and tailing zeros if mode ASDF chosssen.
+As you know the leading and tailing zeros have no numerical significance, but it may have an aesthetic one. The comparator will ignore leading and tailing zeros if PRIMARY mode chosen.
 
 ## Space insensitive
 
@@ -105,13 +94,11 @@ For example:
 
 assertThat("   my\tfoo  bar ", equalToIgnoringWhiteSpace(" my  foo bar"))
 
-## Heading zeros incensitive
-The comparator doesn't take care of zeros in front of numbers.
 
 ## Custom comparator
 
 ### Internationalisation I18n
-The comparator can be ajusted to compare compare strings lexicographically, according to a specific locale.
+The comparator can be adjusted to compare compare strings lexicographically, according to a specific locale.
 
 
 
@@ -119,9 +106,9 @@ The Collator class performs locale-sensitive String comparison. You use this cla
 
 ### Case insensitive
 
-The comparator can be ajusted to compare strings ignoring case difference.
+The comparator can be adjusted to compare strings ignoring case difference.
 
-Note that this method does not take locale into account, and will result in an unsatisfactory ordering for certain locales. The java.text package provides collators to allow locale-sensitive ordering.
+Note that this method does not take locale into account, and will result in an unsatisfactory ordering for certain locale. The java.text package provides collators to allow locale-sensitive ordering.
 
 
 ## Lists table order
@@ -162,43 +149,43 @@ Here list of summaries
 <tr><td>PRIMARY
 <td>Look only at the number numeric value. Treat leading and trailing zeros as non significant.
 <td>
-<code>'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc5.doc'</code><br>
-<code>'Doc&nbsp;5.doc'&nbsp;=&nbsp;'Doc05.doc'</code><br>
-<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.2.doc'</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;=&nbsp;"Doc5.doc"</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;=&nbsp;"Doc05.doc"</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.2.doc"</code><br>
 <tr><td>SECONDARY
 <td>If the string are <i>PRIMARY</i> equal, the comparator looks white spaces and leading and trailing zeros around numbers to differentiate them.<br>
 <br>
 This a can be useful is you want to sort in a definitive order similar string.
 <td>
-<code>'Doc&nbsp;5.doc'&nbsp;&gt;&nbsp;'Doc5.doc'</code><br>
-<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.doc'</code><br>
-<code>'Doc&nbsp;5.doc'&nbsp;&lt;&nbsp;'Doc05.2.doc'"</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;&gt;&nbsp;"Doc5.doc"</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.doc"</code><br>
+<code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.2.doc""</code><br>
 <tr><td>LTRIM
 <td>Ignore leading white spaces at the beginning and the end of the string.
 <td> 
-<code>'Doc5.doc'&nbsp;=&nbsp;'&nbsp;&nbsp;&nbsp;Doc5.doc'</code><br>
+<code>"Doc5.doc"&nbsp;=&nbsp;"&nbsp;&nbsp;&nbsp;Doc5.doc"</code><br>
 <tr><td>RTRIM
 <td>Ignore trailing white spaces at the beginning and the end of the string.
-<td> <code>'Doc5.doc'&nbsp;=&nbsp;'Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;'</code><br>
+<td> <code>"Doc5.doc"&nbsp;=&nbsp;"Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;"</code><br>
 <tr><td>TRIM
 
 <td>Ignore leading and trailing white spaces at the beginning and the end of the string. 
 <br><br>
 <i>Note</i>: Combination of LTRIM and RTRIM
 <td>
-<code>'Doc5.doc'&nbsp;=&nbsp;'&nbsp;&nbsp;Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;'</code><br>
+<code>"Doc5.doc"&nbsp;=&nbsp;"&nbsp;&nbsp;Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;"</code><br>
 <tr><td>NEGATIVE_NUMBER
 <td>Treat the hyphen before the number as negative.
 <td>
-<code>'-5'&nbsp;&lt;&nbsp;'-4'</code><br>
+<code>"-5"&nbsp;&lt;&nbsp;"-4"</code><br>
 <tr><td>RATIONAL_NUMBER
-<td>Handle the portion after the dot '.' as decimal.
+<td>Handle the portion after the dot "." as decimal.
 <td>
-<code>'10.4'&nbsp;&lt;&nbsp;'10.45'</code><br>
+<code>"10.4"&nbsp;&lt;&nbsp;"10.45"</code><br>
 <tr><td>REAL_NUMBER
 <td>Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag.
 <td>
-<code>'-10.4'&nbsp;&gt;&nbsp;'-10.45'</code><br>
+<code>"-10.4"&nbsp;&gt;&nbsp;"-10.45"</code><br>
 <tr><td>SPACE_INSENSITVE
 <td>Ignore  white spaces in string.
 <td><code>"abc"	= " a b&nbsp;&nbsp;c "</code><br>

@@ -8,7 +8,7 @@ package com.plr.comparator.natural
 
 import static com.plr.comparator.natural.CompType.*
 import spock.lang.Specification
-import static com.plr.comparator.natural.NaturalComparator.Flags
+import static com.plr.comparator.natural.NaturalComparator.Flags.*
 
 import com.plr.comparator.natural.NaturalComparator;
 import com.plr.comparator.natural.NumberTokenComparable;
@@ -672,6 +672,8 @@ class NaturalComparatorTest extends Specification {
 		"10.123"	| "10.2" 	| GREATER 		| LESS			| LESS			| GREATER		| LESS			| LESS
 		"-10.10"	| "-10.1" 	| GREATER 		| EQUAL			| GREATER		| GREATER		| EQUAL			| GREATER
 		"-10.2"		| "-10.123" | LESS 			| GREATER		| GREATER		| LESS			| LESS			| LESS
+		"doc 2"		| "doc02" 	| EQUAL			| EQUAL			| LESS			| EQUAL			| EQUAL			| LESS
+		"doc  2"	| "doc 2" 	| EQUAL			| EQUAL			| LESS			| EQUAL			| EQUAL			| LESS
 
 	}
 }
