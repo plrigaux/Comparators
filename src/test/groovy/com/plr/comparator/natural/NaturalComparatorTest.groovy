@@ -413,7 +413,7 @@ class NaturalComparatorTest extends Specification {
 		"1-02"		| "1- 2" 		| EQUAL			| GREATER	
 		"1-02"		| "1- 2 Tail" 	| LESS			| LESS
 		"1-2 Tail"	| "1- 2" 		| GREATER		| GREATER
-		"Doc    5"	| "Doc 5" 		| EQUAL			| LESS
+		"Doc    5"	| "Doc 5" 		| EQUAL			| GREATER
 	
 
 	}
@@ -579,7 +579,7 @@ class NaturalComparatorTest extends Specification {
 		"20"				| ["20"]
 		"2"					| ["2"]
 		"-20"				| ["-20"]
-		" -40"				| [" ","-40"]
+		" -40"				| [" -40"]
 		"-20.234"			| ["-20.234"]
 
 		//comma or hyphen in string
@@ -612,11 +612,11 @@ class NaturalComparatorTest extends Specification {
 		"0.3000"			| ["0.3000"]
 
 		//spaces
-		"pics 5"			| ["pics ", "5"]
-		"pics    5"			| ["pics    ", "5"]
-		"pics 5 test"		| ["pics ", "5", " test"]
-		"pics    5 6"		| ["pics    ", "5", " ", "6"]
-		"pics    5 6 "		| ["pics    ", "5", " ", "6", " "]
+		"pics 5"			| ["pics", " 5"]
+		"pics    5"			| ["pics", "    5"]
+		"pics 5 test"		| ["pics", " 5", " test"]
+		"pics    5 6"		| ["pics", "    5", " 6"]
+		"pics    5 6 "		| ["pics", "    5", " 6", " "]
 		"pics"				| ["pics"]
 
 
@@ -673,7 +673,7 @@ class NaturalComparatorTest extends Specification {
 		"-10.10"	| "-10.1" 	| GREATER 		| EQUAL			| GREATER		| GREATER		| EQUAL			| GREATER
 		"-10.2"		| "-10.123" | LESS 			| GREATER		| GREATER		| LESS			| LESS			| LESS
 		"doc 2"		| "doc02" 	| EQUAL			| EQUAL			| LESS			| EQUAL			| EQUAL			| LESS
-		"doc  2"	| "doc 2" 	| EQUAL			| EQUAL			| LESS			| EQUAL			| EQUAL			| LESS
+		"doc  2"	| "doc 2" 	| EQUAL			| EQUAL			| GREATER		| EQUAL			| EQUAL			| GREATER
 
 	}
 }

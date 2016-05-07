@@ -13,7 +13,7 @@ public class AlphaTokenComparable extends TokenComparable {
 	}
 
 	@Override
-	boolean isNumber() {
+	public boolean isNumber() {
 		return false;
 	}
 
@@ -40,4 +40,10 @@ public class AlphaTokenComparable extends TokenComparable {
 
 		return comparator.compare(s1, s2);
 	}
+	
+	@Override
+	public int size() {
+		return str.length();
+	}
+
 }

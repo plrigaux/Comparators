@@ -68,7 +68,7 @@ public class NumberTokenComparable extends TokenComparable {
 	}
 
 	@Override
-	boolean isNumber() {
+	public boolean isNumber() {
 		return true;
 	}
 
@@ -209,6 +209,11 @@ public class NumberTokenComparable extends TokenComparable {
 
 	public CharSequence getUnit() {
 		return units;
+	}
+
+	@Override
+	public int size() {
+		return str.length();
 	}
 
 }

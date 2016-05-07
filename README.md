@@ -89,20 +89,30 @@ The comparator takes also care of the decimal part of the number. Honestly, I do
 
 As you know the leading and tailing zeros have no numerical significance, but it may have an aesthetic one. Zero padding can also be used to sort numerical value in natural order. The comparator will ignore leading and tailing zeros if PRIMARY mode chosen.
 
-## Space insensitive
+## Space handling
 
-The comparator doesn't take care of white spaces in front of numbers.
+The comparator has different ways to handle white spaces.
 
-all leading and trailing whitespace of both the expectedString and the examined string are ignored
-any remaining whitespace, appearing within either string, is collapsed to a single space before comparison
-For example:
+Note: for now the comparator only handle white spaces and NOT horizontal spaces the nonbraking space \u00A0.
 
-assertThat("   my\tfoo  bar ", equalToIgnoringWhiteSpace(" my  foo bar"))
+### Space insensitive
+
+The comparator doesn't take in account any white spaces in the string.
+
+
+### Space repetition insensitive
+
+The comparator collapse series of continuous white spaces and treat then as one space.
+
+### Space trimming
+
+The comparator can ignore white space at the beginning, at the end or at both end of the string.
+
 
 
 ## Custom comparator
 
-### Internationalisation I18n
+### Internationalization (I18n)
 The comparator can be adjusted to compare compare strings lexicographically, according to a specific locale.
 
 
@@ -130,7 +140,6 @@ Sometimes they accept and skip whitespace, skip leading zeros and most important
 
 
 
-https://github.com/paour/natorder
 
 ## Reverse order
 If you want to sort in the reverse order you just have to call the  reverse() method. It leaverage the Java&nbsp;8 utility method.
@@ -151,12 +160,14 @@ Here list of summaries
 
 <table>
 <tr><th>Case<th>Description<th>Example
+
 <tr><td>PRIMARY
 <td>Look only at the number numeric value. Treat leading and trailing zeros as non significant.
 <td>
 <code>"Doc&nbsp;5.doc"&nbsp;=&nbsp;"Doc5.doc"</code><br>
 <code>"Doc&nbsp;5.doc"&nbsp;=&nbsp;"Doc05.doc"</code><br>
 <code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.2.doc"</code><br>
+
 <tr><td>SECONDARY
 <td>If the string are <i>PRIMARY</i> equal, the comparator looks white spaces and leading and trailing zeros around numbers to differentiate them.<br>
 <br>
@@ -165,37 +176,44 @@ This a can be useful is you want to sort in a definitive order similar string.
 <code>"Doc&nbsp;5.doc"&nbsp;&gt;&nbsp;"Doc5.doc"</code><br>
 <code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.doc"</code><br>
 <code>"Doc&nbsp;5.doc"&nbsp;&lt;&nbsp;"Doc05.2.doc""</code><br>
+
 <tr><td>LTRIM
 <td>Ignore leading white spaces at the beginning and the end of the string.
 <td> 
 <code>"Doc5.doc"&nbsp;=&nbsp;"&nbsp;&nbsp;&nbsp;Doc5.doc"</code><br>
+
 <tr><td>RTRIM
 <td>Ignore trailing white spaces at the beginning and the end of the string.
 <td> <code>"Doc5.doc"&nbsp;=&nbsp;"Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;"</code><br>
-<tr><td>TRIM
 
+<tr><td>TRIM
 <td>Ignore leading and trailing white spaces at the beginning and the end of the string. 
 <br><br>
 <i>Note</i>: Combination of LTRIM and RTRIM
 <td>
 <code>"Doc5.doc"&nbsp;=&nbsp;"&nbsp;&nbsp;Doc5.doc&nbsp;&nbsp;&nbsp;&nbsp;"</code><br>
+
 <tr><td>NEGATIVE_NUMBER
 <td>Treat the hyphen before the number as negative.
 <td>
 <code>"-5"&nbsp;&lt;&nbsp;"-4"</code><br>
+
 <tr><td>RATIONAL_NUMBER
 <td>Handle the portion after the dot "." as decimal.
 <td>
 <code>"10.4"&nbsp;&lt;&nbsp;"10.45"</code><br>
+
 <tr><td>REAL_NUMBER
 <td>Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag.
 <td>
 <code>"-10.4"&nbsp;&gt;&nbsp;"-10.45"</code><br>
+
 <tr><td>SPACE_INSENSITVE
 <td>Ignore  white spaces in string.
 <td><code>"abc"	= " a b&nbsp;&nbsp;c "</code><br>
 		<code>"  \n   abc  \n"	= " a b   c "</code><br>
-<tr><td>	SPACE_REPETITION_INSENSITVE	
+
+<tr><td>SPACE_REPETITION_INSENSITVE	
 <td> Ignore  white spaces repetition in string.
 <td><code>"ab c"	= "ab   c"</code><br>
 <code>"abc"	!= "ab   c"</code><br>

@@ -29,7 +29,9 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 
 	public abstract CharSequence getStr();
 	
-	abstract boolean isNumber();
+	abstract public boolean isNumber();
+	
+	abstract public int size();
 
 	boolean isNegative() {
 		return false;

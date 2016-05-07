@@ -121,7 +121,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		StringBuilder regex = new StringBuilder(200);
 		
 //		if (pureNumbers) {
-//			regex.append("\\s*");
+			regex.append("\\s*");
 //		}
 
 		if (isNegativeNumber()) {
@@ -215,7 +215,10 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 				TokenComparable ss1 = list.get(k++);
 				TokenComparable ss2 = list.get(k++);
 
-				result = ss1.compareLeadingZerosTo(ss2);
+//				result = ss1.compareLeadingZerosTo(ss2);
+				
+				result = ss1.size() - ss2.size();
+
 
 				if (result != 0) {
 					return result;
