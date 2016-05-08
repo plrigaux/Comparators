@@ -15,14 +15,9 @@ This [article](http://blog.codinghorror.com/sorting-for-humans-natural-sort-orde
 
 As humans we sort strings differently than computers. This library helps to sort string in natural order. The natural order is the way humans would sort elements contrary as the default computer sorting order which follow the _unnatural_ ASCII order.
 
-"Natural sort" is the widely-used term for sorting "image9.jpg" as being less than "image10.jpg". it is "natural" because it is how a human being would sort them, as opposed to the unnatural "ascii-betical" sorting that computers do by default. codinghorror.com/blog/archives/001018.html – Kip Aug 11 '09 at 19:28
+We call it "natural order" because it is how a human being would sort normally string, as opposed to the unnatural "ascii-betical" sorting that computers do by default. For example in "natural order" the file "image9.jpg" before "image10.jpg" or software version strings "1.2.10.5" is considered greater than "1.2.9.1".
 
-
-I'd like some kind of string comparison function that preserves natural sort order1. Is there anything like this built into Java? I can't find anything in the String class, and the Comparator class only knows of two implementations.
-
-The Alphanum Algorithm is an improved sorting algorithm for strings
-containing numbers.  Instead of sorting numbers in ASCII order like
-a standard sort, this algorithm sorts numbers in numeric order.
+See table below for the difference between the "ASCII Order" and the "Natural Order".
 
 |ASCII Order   | Natural Order   |
 |--------------|-----------------|
@@ -37,10 +32,15 @@ a standard sort, this algorithm sorts numbers in numeric order.
 |     z12.doc  |     z12.doc     |
 
 
+It's easy to find on the Web different algorithms to compare in "Natural Order", but I wanted to have a solution that encompass different use cases, such as :
+ 
+* skip whitespace
+* skip leading zeros 
+* define an order when the string are equivalent `Example: 4-05 < 4-050`
+* I18n
+* ...
+ 
 
-1. Negative number
-2. Space insensitive
-1. Switch between collator
 
 ## Numbers
 
@@ -89,54 +89,44 @@ The comparator takes also care of the decimal part of the number. Honestly, I do
 
 As you know the leading and tailing zeros have no numerical significance, but it may have an aesthetic one. Zero padding can also be used to sort numerical value in natural order. The comparator will ignore leading and tailing zeros if PRIMARY mode chosen.
 
-## Space handling
+### Space handling
 
 The comparator has different ways to handle white spaces.
 
 Note: for now the comparator only handle white spaces and NOT horizontal spaces the nonbraking space \u00A0.
 
-### Space insensitive
+#### Space insensitive
 
 The comparator doesn't take in account any white spaces in the string.
 
 
-### Space repetition insensitive
+#### Space repetition insensitive
 
 The comparator collapse series of continuous white spaces and treat then as one space.
 
-### Space trimming
+#### Space trimming
 
 The comparator can ignore white space at the beginning, at the end or at both end of the string.
 
 
 
-## Custom comparator
+### Custom comparator
 
-### Internationalization (I18n)
+#### Internationalization (I18n)
 The comparator can be adjusted to compare compare strings lexicographically, according to a specific locale.
 
 
 
 The Collator class performs locale-sensitive String comparison. You use this class to build searching and sorting routines for natural language text.
 
-### Case insensitive
+#### Case insensitive
 
 The comparator can be adjusted to compare strings ignoring case difference.
 
 Note that this method does not take locale into account, and will result in an unsatisfactory ordering for certain locale. The java.text package provides collators to allow locale-sensitive ordering.
 
 
-## Lists table order
-In my specific case, I have software version strings that I want to sort. So I want "1.2.10.5" to be considered greater than "1.2.9.1".
 
-
-
-
-1 By "natural" sort order, I mean it compares strings the way a human would compare them, as opposed to "ascii-betical" sort ordering that only makes sense to programmers. In other words, "image9.jpg" is less than "image10.jpg", and "album1set2page9photo1.jpg" is less than "album1set2page10photo5.jpg", and "1.2.9.1" is less than "1.2.10.5"
-
-
-
-Sometimes they accept and skip whitespace, skip leading zeros and most importantly places shorter strings before longer strings when they are equivalent. The string 1.020 will then be placed after 1.20. If you're using it for determining if two versions are equal you can get a false negative in this case. I.e. when checking that compareTo() returns 0.
 
 
 
