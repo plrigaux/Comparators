@@ -6,6 +6,10 @@ public class CaseInsensitiveComparator implements Comparator<CharSequence> {
 
 	private final static CaseInsensitiveComparator instance = new CaseInsensitiveComparator();
 
+	public static CaseInsensitiveComparator getInstance() {
+		return instance;
+	}
+
 	public int compare(CharSequence s1, CharSequence s2) {
 		int n1 = s1.length();
 		int n2 = s2.length();
@@ -27,10 +31,6 @@ public class CaseInsensitiveComparator implements Comparator<CharSequence> {
 			}
 		}
 		return n1 - n2;
-	}
-
-	public static CaseInsensitiveComparator getInstance() {
-		return instance;
 	}
 
 }

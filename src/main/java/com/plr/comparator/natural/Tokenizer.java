@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.plr.comparator.Utils;
+
 public class Tokenizer implements Iterator<TokenComparable> {
 
 	private static final Logger logger = LoggerFactory.getLogger(Tokenizer.class);
@@ -130,33 +132,17 @@ public class Tokenizer implements Iterator<TokenComparable> {
 	private void trimMatcher() {
 
 		if (naturalComparator.isTrim() || naturalComparator.isLTrim()) {
-			from = _ltrim(toSplit);
+			from =  Utils.leftTrim(toSplit);
 		}
 
 		to = toSplit.length();
 		if (naturalComparator.isTrim() || naturalComparator.isRTrim()) {
-			to = _rtrim(toSplit);
+			to = Utils.rightTrim(toSplit);
 		}
 
 		matcher.region(from, to);
 
 		start = from;
-	}
-
-	private static int _ltrim(CharSequence s) {
-		int i = 0;
-		while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
-			i++;
-		}
-		return i;
-	}
-
-	private static int _rtrim(CharSequence s) {
-		int i = s.length() - 1;
-		while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
-			i--;
-		}
-		return i + 1;
 	}
 
 	TokenComparable tokenComparableTemp = null;

@@ -11,10 +11,10 @@ import com.plr.comparator.SpaceInsensitiveComparator;
 
 import spock.lang.Specification
 
-import com.plr.comparator.SpaceCollapseInsensitiveComparator;
-import com.plr.comparator.SpaceInsensitiveComparator;
-
-import com.plr.comparator.natural.AlphaTokenComparable;
+import com.plr.comparator.natural.AlphaTokenComparable
+import com.plr.comparator.whitespace.SpaceInsensitiveComparator;
+import com.plr.comparator.whitespace.SpaceRepetitionInsensitiveComparator;
+import com.plr.comparator.whitespace.SpaceTrimComparator;;
 
 
 class IgnoreSpaceTest extends Specification {
@@ -63,36 +63,36 @@ class IgnoreSpaceTest extends Specification {
 		" a  b "	| "abc"
 	}
 
-	def "Space Collapse Insensitive comparison equal"() {
+	def "Space Repetition Insensitive comparison equal"() {
 
 		given:
 
 		expect:
 
 
-		SpaceCollapseInsensitiveComparator.getInstance().compare(smaller, bigger) == 0;
+		SpaceRepetitionInsensitiveComparator.getInstance().compare(smaller, bigger) == 0;
 
 		where:
 
 		smaller 		| bigger
 		"a"			| "a"
 		"abc"	| "abc"
-		"ab c"	| "ab   c"
-		"b "			| "b\n\n"
-		"abc"	| "abc "
-		"   a "			| " a          "
-		" "	| "\n\n\n\n\n\n\n\n"
-		""	| ""
+		"ab c"		| "ab   c"
+		"b "		| "b\n\n"
+		"abc   "	| "abc "
+		"   a "		| " a          "
+		" "			| "\n\n\n\n\n\n\n\n"
+		""			| ""
 	}
 	
-	def "Space Collapse Insensitive comparison smaller greater"() {
+	def "Space Repetition Insensitive comparison smaller greater"() {
 
 		given:
 
 		expect:
 
-		SpaceCollapseInsensitiveComparator.getInstance().compare(smaller, bigger) < 0;
-		SpaceCollapseInsensitiveComparator.getInstance().compare(bigger, smaller) > 0;
+		SpaceRepetitionInsensitiveComparator.getInstance().compare(smaller, bigger) < 0;
+		SpaceRepetitionInsensitiveComparator.getInstance().compare(bigger, smaller) > 0;
 
 		where:
 
@@ -102,4 +102,48 @@ class IgnoreSpaceTest extends Specification {
 		"d "			| "d    g"
 
 	}
+	
+	def "Space Trim Insensitive comparison smaller equal"() {
+		
+				given:
+		
+				expect:
+		
+				SpaceTrimComparator.getInstance().compare(smaller, bigger) == 0;
+		
+				where:
+		
+				smaller 		| bigger
+				"a"				| "a "
+				"a"				| " a"
+				"a"				| "a      "
+				"a"				| "      a"
+				"a"				| "   a   "
+				"   a   "		| " a"
+				""		| " "
+				""		| "             "
+				"     "		| ""
+				" "		| ""
+				""		| ""
+		
+			}
+	
+	def "Space Trim Insensitive comparison smaller greater"() {
+		
+				given:
+		
+				expect:
+		
+				SpaceTrimComparator.getInstance().compare(smaller, bigger) < 0;
+				SpaceTrimComparator.getInstance().compare(bigger, smaller) > 0;
+		
+				where:
+		
+				smaller 		| bigger
+				"a"				| "ab "
+				"a"				| " ab "
+				"  asdf"		| " asdfg"
+				"d "			| "d    g"
+		
+			}
 }

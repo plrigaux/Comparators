@@ -1,10 +1,16 @@
-package com.plr.comparator;
+package com.plr.comparator.whitespace;
 
 import java.util.Comparator;
+
+import com.plr.comparator.Utils;
 
 public class SpaceInsensitiveComparator implements Comparator<CharSequence> {
 	
 	static private final SpaceInsensitiveComparator instance = new SpaceInsensitiveComparator();
+	
+	public static SpaceInsensitiveComparator getInstance() {
+		return instance;
+	}
 	
 	@Override
 	public int compare(CharSequence s1, CharSequence s2) {
@@ -48,28 +54,11 @@ public class SpaceInsensitiveComparator implements Comparator<CharSequence> {
 		}
 
 		if (klen) {
-			return evaluateLength(s1, len1, k, 1);
+			return Utils.evaluateLength(s1, len1, k, 1);
 		} else if (llen) {
-			return evaluateLength(s2, len2, l, -1);
+			return Utils.evaluateLength(s2, len2, l, -1);
 		}
 
 		return 0;
 	}
-
-	 static int evaluateLength(CharSequence string, int length, int index, int result) {
-		do {
-			char ch = string.charAt(index);
-			if (!Character.isWhitespace(ch)) {
-				return result;
-			}
-		} while (++index < length);
-
-		return 0;
-	}
-
-	public static SpaceInsensitiveComparator getInstance() {
-		return instance;
-	}
-
-	
 }

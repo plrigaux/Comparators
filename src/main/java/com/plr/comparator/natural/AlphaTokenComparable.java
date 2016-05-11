@@ -1,7 +1,7 @@
 package com.plr.comparator.natural;
 
-import com.plr.comparator.SpaceCollapseInsensitiveComparator;
-import com.plr.comparator.SpaceInsensitiveComparator;
+import com.plr.comparator.whitespace.SpaceInsensitiveComparator;
+import com.plr.comparator.whitespace.SpaceRepetitionInsensitiveComparator;
 
 public class AlphaTokenComparable extends TokenComparable {
 
@@ -35,7 +35,7 @@ public class AlphaTokenComparable extends TokenComparable {
 		if (naturalComparator.isSpaceInsensitve()) {
 			return SpaceInsensitiveComparator.getInstance().compare(s1, s2);
 		} else if (naturalComparator.isSpaceCollapseInsensitve()) {
-			return SpaceCollapseInsensitiveComparator.getInstance().compare(s1, s2);
+			return SpaceRepetitionInsensitiveComparator.getInstance().compare(s1, s2);
 		}
 
 		return comparator.compare(s1, s2);

@@ -646,7 +646,8 @@ class NaturalComparatorTest extends Specification {
 
 		given:
 		
-		NaturalComparator naturalComparator1 =  NaturalComparator.getComparator();
+		
+		Comparator<CharSequence> naturalComparator1 =  NaturalComparator.getComparator();
 		NaturalComparator naturalComparator2 =  NaturalComparator.getComparator(RATIONAL_NUMBER)
 		NaturalComparator naturalComparator3 =  NaturalComparator.getComparator(SECONDARY, RATIONAL_NUMBER);
 		NaturalComparator naturalComparator4 =  NaturalComparator.getComparator(NEGATIVE_NUMBER);
