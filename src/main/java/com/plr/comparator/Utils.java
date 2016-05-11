@@ -1,5 +1,7 @@
 package com.plr.comparator;
 
+import com.google.common.base.CharMatcher;
+
 public class Utils {
 
 	/**
@@ -39,6 +41,23 @@ public class Utils {
 		return i + 1;
 	}
 
+	static public int rightTrim(CharSequence s, CharMatcher charMatcher) {
+		int i = s.length() - 1;
+		while (i >= 0 && charMatcher.matches(s.charAt(i))) {
+			i--;
+		}
+		return i + 1;
+	}
+	
+	static public int leftTrim(CharSequence s, CharMatcher charMatcher) {
+		int i = 0;
+		int length = s.length();
+		while (i < length && charMatcher.matches(s.charAt(i))) {
+			i++;
+		}
+		return i;
+	}
+	
 	public static int evaluateLength(CharSequence string, int length, int index, int result) {
 		do {
 			char ch = string.charAt(index);
@@ -50,4 +69,14 @@ public class Utils {
 		return 0;
 	}
 
+	public static int evaluateLength(CharSequence string, CharMatcher ignoreOn, int length, int index, int result) {
+		do {
+			char ch = string.charAt(index);
+			if (!Character.isWhitespace(ch)) {
+				return result;
+			}
+		} while (++index < length);
+	
+		return 0;
+	}
 }

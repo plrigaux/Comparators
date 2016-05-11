@@ -10,9 +10,11 @@ and I decided to implemented them as well.
 
 ## Comparators
 
-For now here the implemented comparators.
+For now, here the implemented comparators.
 
 * [Natural Order Comparator](NaturalOrderComparator.md): A configurable comparator that sort strings with 
 numerical component in the natural order.
 
 * [White Space Comparators](WhiteSpaceComparators.md): Different comparators that handle white space.
+
+* [Other Comparators](OtherComparators.md): Other trivial comparators.
