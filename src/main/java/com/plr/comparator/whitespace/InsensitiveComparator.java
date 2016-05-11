@@ -6,21 +6,41 @@ import com.google.common.base.CharMatcher;
 
 public class InsensitiveComparator implements Comparator<CharSequence> {
 
-	public static InsensitiveComparator onWhiteSpace() {
+	
+	public static InsensitiveComparator on(CharMatcher ignoreOn) {
 		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.SPACE_TRIM;
-		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
-		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn);
-	}
-
-	public static InsensitiveComparator onRepetition() {
-		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.REPETITION_INSENSITIVE;
-		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
 		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn);
 	}
 	
-	public static InsensitiveComparator onAllWhiteSpace() {
-		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.CHARACTER_INSENSITIVE;
+	public static InsensitiveComparator onWhiteSpace() {
+		return on(CharMatcher.WHITESPACE);
+	}
+
+	public static InsensitiveComparator onRepetitionWhiteSpace() {
 		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
+		return onRepetition(ignoreOn);
+	}
+	
+	public static InsensitiveComparator onRepetition(char ignoreOn) {
+		return onRepetition(CharMatcher.is(ignoreOn));
+	}
+	
+	public static InsensitiveComparator onRepetition(CharMatcher ignoreOn) {
+		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.REPETITION_INSENSITIVE;
+		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn);
+	}
+
+	public static InsensitiveComparator onAllWhiteSpace() {
+		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
+		return onAll(ignoreOn);
+	}
+	
+	public static InsensitiveComparator onAll(char ignoreOn) {
+		return onAll(CharMatcher.is(ignoreOn));
+	}
+	
+	public static InsensitiveComparator onAll(CharMatcher ignoreOn) {
+		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.CHARACTER_INSENSITIVE;
 		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn);
 	}
 	
@@ -34,6 +54,18 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 
 	public InsensitiveComparator rightTrim() {
 		return new InsensitiveComparator(ignoreOn, leftTrimer, ignoreOn, replace, beginEndFlexibleComparator);
+	}
+	
+	public InsensitiveComparator trim(CharMatcher trim) {
+		return new InsensitiveComparator(ignoreOn, trim, trim, replace, beginEndFlexibleComparator);
+	}
+
+	public InsensitiveComparator leftTrim(CharMatcher trim) {
+		return new InsensitiveComparator(ignoreOn, trim, rightTrimer, replace, beginEndFlexibleComparator);
+	}
+
+	public InsensitiveComparator rightTrim(CharMatcher trim) {
+		return new InsensitiveComparator(ignoreOn, leftTrimer, trim, replace, beginEndFlexibleComparator);
 	}
 
 	final CharMatcher leftTrimer;

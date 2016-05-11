@@ -6,7 +6,7 @@ public class AlphaTokenComparable extends TokenComparable {
 
 	private final CharSequence str;;
 
-	private final InsensitiveComparator REPETITION_INSENSITIVE = InsensitiveComparator.onRepetition(); 
+	private final InsensitiveComparator REPETITION_INSENSITIVE = InsensitiveComparator.onRepetitionWhiteSpace(); 
 	private final InsensitiveComparator SPACE_INSENSITIVE = InsensitiveComparator.onAllWhiteSpace(); 
 	
 	AlphaTokenComparable(CharSequence str, NaturalComparator naturalComparator) {

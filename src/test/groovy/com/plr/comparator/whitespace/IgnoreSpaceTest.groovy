@@ -64,7 +64,7 @@ class IgnoreSpaceTest extends Specification {
 	def "Space Repetition Insensitive comparison equal"() {
 
 		given:
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetition();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetitionWhiteSpace();
 
 		expect:
 
@@ -86,7 +86,7 @@ class IgnoreSpaceTest extends Specification {
 	def "Space Repetition Insensitive comparison smaller greater"() {
 
 		given:
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetition();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetitionWhiteSpace();
 		
 		expect:
 
