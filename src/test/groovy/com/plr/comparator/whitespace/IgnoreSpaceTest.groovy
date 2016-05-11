@@ -106,7 +106,7 @@ class IgnoreSpaceTest extends Specification {
 		
 				given:
 
-				InsensitiveComparator insensitiveComparator = InsensitiveComparator.onWhiteSpace().trim();
+				InsensitiveComparator insensitiveComparator = InsensitiveComparator.trimOnWhiteSpace().trim();
 				
 				expect:
 		
@@ -133,7 +133,7 @@ class IgnoreSpaceTest extends Specification {
 		
 				given:
 		
-				InsensitiveComparator insensitiveComparator = InsensitiveComparator.onWhiteSpace().trim();
+				Comparator<CharSequence> insensitiveComparator = InsensitiveComparator.trimOnWhiteSpace().trim();
 				
 				expect:
 		

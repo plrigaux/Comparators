@@ -7,17 +7,17 @@ import com.google.common.base.CharMatcher;
 public class InsensitiveComparator implements Comparator<CharSequence> {
 
 	
-	public static InsensitiveComparator on(CharMatcher ignoreOn) {
+	public static InsensitiveComparator trimOn(CharMatcher ignoreOn) {
 		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.SPACE_TRIM;
-		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn);
+		return new InsensitiveComparator(beginEndFlexibleComparator, ignoreOn).trim();
 	}
 	
-	public static InsensitiveComparator onWhiteSpace() {
-		return on(CharMatcher.WHITESPACE);
+	public static InsensitiveComparator trimOnWhiteSpace() {
+		return trimOn(CharMatcher.whitespace());
 	}
 
 	public static InsensitiveComparator onRepetitionWhiteSpace() {
-		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
+		CharMatcher ignoreOn = CharMatcher.whitespace();
 		return onRepetition(ignoreOn);
 	}
 	
@@ -31,7 +31,7 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 	}
 
 	public static InsensitiveComparator onAllWhiteSpace() {
-		CharMatcher ignoreOn = CharMatcher.WHITESPACE;
+		CharMatcher ignoreOn = CharMatcher.whitespace();
 		return onAll(ignoreOn);
 	}
 	

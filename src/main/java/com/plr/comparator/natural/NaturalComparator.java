@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Pierre-Luc Rigaux <plrigaux@gmail.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.plr.comparator.natural;
 
 import static com.plr.comparator.natural.NaturalComparator.Flags.LTRIM;
@@ -10,30 +25,6 @@ import static com.plr.comparator.natural.NaturalComparator.Flags.TRIM;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-/*
- * The Alphanum Algorithm is an improved sorting algorithm for strings
- * containing numbers.  Instead of sorting numbers in ASCII order like
- * a standard sort, this algorithm sorts numbers in numeric order.
- *
- * The Alphanum Algorithm is discussed at http://www.DaveKoelle.com
- *
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- */
 
 import java.util.Comparator;
 import java.util.EnumSet;
