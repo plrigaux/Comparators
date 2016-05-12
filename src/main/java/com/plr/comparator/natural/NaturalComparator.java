@@ -15,12 +15,7 @@ limitations under the License.
 */
 package com.plr.comparator.natural;
 
-import static com.plr.comparator.natural.NaturalComparator.Flags.LTRIM;
-import static com.plr.comparator.natural.NaturalComparator.Flags.PRIMARY;
-import static com.plr.comparator.natural.NaturalComparator.Flags.RTRIM;
-import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_INSENSITVE;
-import static com.plr.comparator.natural.NaturalComparator.Flags.SPACE_REPETITION_INSENSITVE;
-import static com.plr.comparator.natural.NaturalComparator.Flags.TRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.*;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -36,54 +31,23 @@ import org.slf4j.LoggerFactory;
 
 import com.plr.comparator.AsciiComparator;
 import com.plr.comparator.CaseInsensitiveComparator;
+import com.plr.comparator.insensitive.InsensitiveComparator;
 
 public final class NaturalComparator implements Comparator<CharSequence> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
 	final private Comparator<CharSequence> alphaComparator;
+	final private boolean isRationalNumber;
+	final private boolean isNegativeNumber;
+	final private boolean pureNumbers;
+	final private boolean isRTrim;
+	final private boolean isLTrim;
+	final private boolean isSpaceInsensitve;
+	final private boolean isSpaceCollapseInsensitve;
+	
 
-	final static public Comparator<CharSequence> ASCII = AsciiComparator.getInstance();
-	final static public Comparator<CharSequence> CASE_INSENSITIVE = CaseInsensitiveComparator.getInstance();
 
-	public enum Flags {
-		/**
-		 * Look only at the number numeric value. Treat leading and tailing
-		 * zeros as non significant.
-		 */
-		PRIMARY, SECONDARY,
-
-		/** Ignore white spaces at the beginning the string */
-		LTRIM,
-
-		/** Ignore white spaces at the end of the string */
-		RTRIM,
-
-		/** Ignore white spaces at the begining and the end of the string */
-		TRIM, 
-		
-		/** Ignore string white spaces */
-		SPACE_INSENSITVE, 
-		
-		/** Ignore string white spaces repetition */
-		SPACE_REPETITION_INSENSITVE,
-
-		/** Combination of the NEGATIVE_NUMBER and RATIONAL_NUMBER flag */
-		REAL_NUMBER,
-
-		/** Treat the hyphen before the number as negative. */
-		NEGATIVE_NUMBER,
-
-		/** Handle the portion after the dot '.' as decimal. */
-		RATIONAL_NUMBER
-	};
-
-	private boolean pureNumbers;
-
-	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
-
-	// final private static String NUM_PAT =
-	// "(?:\\s)*(?:((?<=^|\\s)[-])?0*([1-9]\\d*|0))((\\.\\d++)(?!\\.\\d))?";
 
 	final private static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
 	final private static String DEC_REGEX = "((\\.\\d++)(?!\\.\\d))?";
@@ -91,9 +55,116 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	final Pattern pattern;
 
+	enum Flags {
+		PRIMARY, SECONDARY,
+		LTRIM,
+		RTRIM,
+		TRIM,
+		SPACE_INSENSITVE,
+		SPACE_REPETITION_INSENSITVE,
+		REAL_NUMBER,
+		NEGATIVE_NUMBER,
+		RATIONAL_NUMBER
+	};
+
+	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
+
 	private NaturalComparator() {
 		// Throw an exception if this ever *is* called
 		throw new AssertionError("Instantiating utility class.");
+	}
+
+	public NaturalComparator caseInsensitive() {
+
+		Comparator<CharSequence> comp;
+
+		if (alphaComparator instanceof InsensitiveComparator) {
+			InsensitiveComparator insensitiveComparator = (InsensitiveComparator) alphaComparator;
+
+			comp = insensitiveComparator.ignoreCase();
+		} else {
+			comp = CaseInsensitiveComparator.getInstance();
+		}
+
+		return alphaComparator(comp);
+	}
+
+	public NaturalComparator ascii() {
+		return alphaComparator(AsciiComparator.getInstance());
+	}
+
+	public NaturalComparator alphaComparator(Comparator<CharSequence> alphaComparator) {
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator alphaCollator(Collator alphaComparator) {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Comparator<CharSequence> comp = (Comparator) alphaComparator;
+		return alphaComparator(comp);
+	}
+
+	public NaturalComparator realNumber() {
+		flagSet.add(Flags.REAL_NUMBER);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator trim() {
+		flagSet.add(Flags.TRIM);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator rationalNumber() {
+		flagSet.add(Flags.RATIONAL_NUMBER);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator negativeNumber() {
+		flagSet.add(Flags.NEGATIVE_NUMBER);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	/**
+	 * Provide a comparator where only <b>primary</b> differences are considered
+	 * significant during comparison.
+	 * 
+	 * @return NaturalComparator
+	 */
+	public static NaturalComparator primary() {
+		return new NaturalComparator(AsciiComparator.getInstance(), PRIMARY);
+	}
+
+	/**
+	 * Provide a comparator where only <b>secondary</b> differences and
+	 * <u>above</u> are considered significant during comparison.
+	 * 
+	 * @return NaturalComparator
+	 */
+	public static NaturalComparator secondary() {
+		return new NaturalComparator(AsciiComparator.getInstance(), SECONDARY);
+	}
+
+	public NaturalComparator whiteSpaceInsensitive() {
+
+		InsensitiveComparator comparator = InsensitiveComparator.onAllWhiteSpace();
+
+		if (alphaComparator instanceof CaseInsensitiveComparator) {
+			comparator = comparator.ignoreCase();
+		}
+
+		flagSet.add(Flags.SPACE_INSENSITVE);
+		return new NaturalComparator(comparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator whiteSpaceRepetitionInsensitive() {
+
+		InsensitiveComparator comparator = InsensitiveComparator.onRepetitionWhiteSpace();
+
+		if (alphaComparator instanceof CaseInsensitiveComparator) {
+			comparator = comparator.ignoreCase();
+		}
+
+		flagSet.add(Flags.SPACE_REPETITION_INSENSITVE);
+		return new NaturalComparator(comparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
 
 	private NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
@@ -101,19 +172,21 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 		flagSet.addAll(Arrays.asList(flags));
 
-		if (flagSet.contains(Flags.SECONDARY)) {
-			flagSet.remove(PRIMARY);
-		} else {
-			flagSet.add(PRIMARY);
-		}
-
 		pureNumbers = flagSet.contains(Flags.PRIMARY);
+		isRationalNumber = flagSet.contains(Flags.RATIONAL_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
+		isNegativeNumber = flagSet.contains(Flags.NEGATIVE_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
+		isLTrim = flagSet.contains(PRIMARY) || flagSet.contains(TRIM) || flagSet.contains(LTRIM);
+		isRTrim = flagSet.contains(PRIMARY) || flagSet.contains(TRIM) || flagSet.contains(RTRIM);
+		isSpaceCollapseInsensitve = flagSet.contains(SPACE_REPETITION_INSENSITVE);
+		isSpaceInsensitve = flagSet.contains(SPACE_INSENSITVE);
+				
+		pattern = buildRegEx();
+	}
 
+	private Pattern buildRegEx() {
 		StringBuilder regex = new StringBuilder(200);
-		
-//		if (pureNumbers) {
-			regex.append("\\s*");
-//		}
+
+		regex.append("\\s*");
 
 		if (isNegativeNumber()) {
 			regex.append(NEG_REGEX);
@@ -129,26 +202,9 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			regex.append(DEC_REGEX);
 		}
 
-//		if (pureNumbers) {
-//			regex.append("\\s*");
-//		}
-		
 		logger.debug("Regex: \"{}\"", regex);
 
-		pattern = Pattern.compile(regex.toString());
-	}
-
-	public static NaturalComparator getComparator(Flags... flags) {
-		return getComparator(ASCII, flags);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static NaturalComparator getComparator(Collator collator, Flags... flags) {
-		return getComparator((Comparator) collator, flags);
-	}
-
-	public static NaturalComparator getComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
-		return new NaturalComparator(alphaComparator, flags);
+		return Pattern.compile(regex.toString());
 	}
 
 	public int compare(CharSequence s1, CharSequence s2) {
@@ -182,34 +238,30 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			return splitter1.hasNext() ? 1 : -1;
 		}
 
-		if (pureNumbers && (splitter1.hasNext() || splitter2.hasNext())) {
+		if (pureNumbers) {
 
-			Tokenizer tokenizerMax = splitter1.hasNext() ? splitter1 : splitter2;
+			if (splitter1.hasNext() || splitter2.hasNext()) {
+				Tokenizer tokenizerMax = splitter1.hasNext() ? splitter1 : splitter2;
 
-			TokenComparable ss = tokenizerMax.next();
+				TokenComparable ss = tokenizerMax.next();
 
-			boolean isAllWhiteSpace = ss.isAllWhiteSpace();
+				boolean isAllWhiteSpace = ss.isAllWhiteSpace();
 
-			// means that is tailing white space
-			if (isAllWhiteSpace && !tokenizerMax.hasNext()) {
-				result = 0;
+				// means that is tailing white space
+				if (isAllWhiteSpace && !tokenizerMax.hasNext()) {
+					result = 0;
+				}
+
+				return result;
 			}
-
-			return result;
-		}
-
-		// For now equals, now compare leading zeros
-		if (!pureNumbers) {
+		} else { // For now equals, now compare leading zeros
 			int k = 0;
 			int lim = list.size();
 			while (k < lim) {
 				TokenComparable ss1 = list.get(k++);
 				TokenComparable ss2 = list.get(k++);
 
-//				result = ss1.compareLeadingZerosTo(ss2);
-				
 				result = ss1.size() - ss2.size();
-
 
 				if (result != 0) {
 					return result;
@@ -234,31 +286,31 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	}
 
 	public boolean isTrim() {
-		return flagSet.contains(TRIM) || flagSet.contains(PRIMARY);
+		return isRTrim & isLTrim;
 	}
 
 	public boolean isRTrim() {
-		return flagSet.contains(RTRIM);
+		return isRTrim;
 	}
 
 	public boolean isLTrim() {
-		return flagSet.contains(LTRIM);
+		return isLTrim;
 	}
 
 	public boolean isSpaceInsensitve() {
-		return flagSet.contains(SPACE_INSENSITVE);
+		return isSpaceInsensitve;
 	}
 
 	public boolean isSpaceCollapseInsensitve() {
-		return flagSet.contains(SPACE_REPETITION_INSENSITVE);
+		return isSpaceCollapseInsensitve;
 	}
 
 	public boolean isRationalNumber() {
-		return flagSet.contains(Flags.RATIONAL_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
+		return isRationalNumber;
 	}
 
 	public boolean isNegativeNumber() {
-		return flagSet.contains(Flags.NEGATIVE_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
+		return isNegativeNumber;
 	}
 
 }

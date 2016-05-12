@@ -131,12 +131,12 @@ public class Tokenizer implements Iterator<TokenComparable> {
 
 	private void trimMatcher() {
 
-		if (naturalComparator.isTrim() || naturalComparator.isLTrim()) {
+		if (naturalComparator.isLTrim()) {
 			from =  Utils.leftTrim(toSplit);
 		}
 
 		to = toSplit.length();
-		if (naturalComparator.isTrim() || naturalComparator.isRTrim()) {
+		if (naturalComparator.isRTrim()) {
 			to = Utils.rightTrim(toSplit);
 		}
 

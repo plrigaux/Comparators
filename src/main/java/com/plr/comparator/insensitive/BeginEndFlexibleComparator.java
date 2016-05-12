@@ -1,4 +1,4 @@
-package com.plr.comparator.whitespace;
+package com.plr.comparator.insensitive;
 
 import com.plr.comparator.Utils;
 
@@ -72,8 +72,9 @@ abstract class BeginEndFlexibleComparator {
 					c2 = insensitiveComparator.replace;
 				}
 
-				if (c1 != c2) {
-					return c1 - c2;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
+				if (result != 0) {
+					return result;
 				}
 
 				klen = ++index1 < length1;
@@ -108,7 +109,7 @@ abstract class BeginEndFlexibleComparator {
 				char c1 = s1.charAt(index1);
 				char c2 = s2.charAt(index2);
 
-				int result = c1 - c2;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
 				if (result != 0) {
 					return result;
 				}
@@ -151,8 +152,9 @@ abstract class BeginEndFlexibleComparator {
 					}
 				}
 
-				if (c1 != c2) {
-					return c1 - c2;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
+				if (result != 0) {
+					return result;
 				}
 
 				klen = ++index1 < length1;

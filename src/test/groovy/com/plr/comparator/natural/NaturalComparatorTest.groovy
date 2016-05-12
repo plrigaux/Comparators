@@ -8,7 +8,9 @@ package com.plr.comparator.natural
 
 import static com.plr.comparator.natural.CompType.*
 import spock.lang.Specification
-import static com.plr.comparator.natural.NaturalComparator.Flags.*
+import static com.plr.comparator.natural.NaturalComparator.Flags
+
+import java.text.Collator;
 
 import com.plr.comparator.natural.NaturalComparator;
 import com.plr.comparator.natural.NumberTokenComparable;
@@ -20,7 +22,8 @@ class NaturalComparatorTest extends Specification {
 
 	def "Pure numbers" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER);
+		NaturalComparator naturalComparator = NaturalComparator.primary().realNumber();
+		
 		Comparator<String> comp = naturalComparator.reversed();
 		comp.reversed();
 		def expected = [
@@ -77,7 +80,7 @@ class NaturalComparatorTest extends Specification {
 	def "Pure numbers comparison"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER);
+		NaturalComparator naturalComparator = NaturalComparator.primary().realNumber();
 
 		expect:
 
@@ -100,7 +103,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "test sort list" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.primary();
 
 
 		def list = [
@@ -174,7 +177,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "test sort list ignore case" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(NaturalComparator.CASE_INSENSITIVE);
+		NaturalComparator naturalComparator = NaturalComparator.primary().caseInsensitive();
 
 		def expected = [
 			"zo1.doc",
@@ -222,11 +225,31 @@ class NaturalComparatorTest extends Specification {
 		then: "The list are equal"
 		list == expected
 	}
+	
+	def "Ignore case and whitespace"() {
+		given:
+		NaturalComparator naturalComparator = NaturalComparator.primary();
+		naturalComparator =  naturalComparator.caseInsensitive();
+		naturalComparator =  naturalComparator.whiteSpaceInsensitive();
+
+
+		expect:
+
+		naturalComparator.compare(smaller, bigger) == 0
+
+		where:
+
+		smaller		|	bigger
+		"A"			| "a"
+		" B"		| "B"
+		" B"		| " b"
+
+	}
 
 	def "product names sort"() {
 		given:
 
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.primary();
 
 		def list = [
 			"1000X Radonius Maximus",
@@ -330,7 +353,7 @@ class NaturalComparatorTest extends Specification {
 	def "Sort list"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
+		NaturalComparator naturalComparator = NaturalComparator.secondary().realNumber();
 		def expected = [
 			"1-2",
 			"1-02",
@@ -396,8 +419,8 @@ class NaturalComparatorTest extends Specification {
 	def "Mutiple cases primary vs secondary"() {
 		given:
 
-		NaturalComparator naturalComparatorP = NaturalComparator.getComparator(PRIMARY);
-		NaturalComparator naturalComparatorS = NaturalComparator.getComparator(SECONDARY);
+		NaturalComparator naturalComparatorP = NaturalComparator.primary();
+		NaturalComparator naturalComparatorS = NaturalComparator.secondary();
 				
 		expect:
 
@@ -432,10 +455,10 @@ class NaturalComparatorTest extends Specification {
 		}
 	}
 
-	def "Mutiple cases"() {
+	def "Mutiple cases real Number"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
+		NaturalComparator naturalComparator = NaturalComparator.secondary().realNumber();
 
 		expect:
 
@@ -471,7 +494,7 @@ class NaturalComparatorTest extends Specification {
 
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator();
+		NaturalComparator naturalComparator = NaturalComparator.primary();
 
 		expect:
 
@@ -489,7 +512,7 @@ class NaturalComparatorTest extends Specification {
 	def "Mutiple cases Numbers"() {
 		given:
 		
-		NaturalComparator nc = NaturalComparator.getComparator(NaturalComparator.ASCII);
+		NaturalComparator nc = NaturalComparator.primary();
 
 		NumberTokenComparable nt1 = new NumberTokenComparable(smaller, nc);
 		NumberTokenComparable nt2 = new NumberTokenComparable(bigger, nc);
@@ -512,7 +535,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "Mutiple white space"() {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, PRIMARY);
+		NaturalComparator naturalComparator = NaturalComparator.primary().realNumber();
 
 
 		expect:
@@ -539,7 +562,7 @@ class NaturalComparatorTest extends Specification {
 	def "Dev test"() {
 
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(REAL_NUMBER, SECONDARY);
+		NaturalComparator naturalComparator = NaturalComparator.secondary().realNumber();
 
 
 		when: "Do nothing"
@@ -624,7 +647,7 @@ class NaturalComparatorTest extends Specification {
 
 	def "Ignore white space"() {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.getComparator(SPACE_INSENSITVE);
+		NaturalComparator naturalComparator = NaturalComparator.primary().whiteSpaceInsensitive();
 
 		expect:
 
@@ -647,12 +670,12 @@ class NaturalComparatorTest extends Specification {
 		given:
 		
 		
-		Comparator<CharSequence> naturalComparator1 =  NaturalComparator.getComparator();
-		NaturalComparator naturalComparator2 =  NaturalComparator.getComparator(RATIONAL_NUMBER)
-		NaturalComparator naturalComparator3 =  NaturalComparator.getComparator(SECONDARY, RATIONAL_NUMBER);
-		NaturalComparator naturalComparator4 =  NaturalComparator.getComparator(NEGATIVE_NUMBER);
-		NaturalComparator naturalComparator5 =  NaturalComparator.getComparator(RATIONAL_NUMBER, NEGATIVE_NUMBER);
-		NaturalComparator naturalComparator6 =  NaturalComparator.getComparator(SECONDARY, RATIONAL_NUMBER, NEGATIVE_NUMBER);
+		Comparator<CharSequence> naturalComparator1 =  NaturalComparator.primary()
+		NaturalComparator naturalComparator2 =  NaturalComparator.primary().rationalNumber()
+		NaturalComparator naturalComparator3 =  NaturalComparator.secondary().rationalNumber();
+		NaturalComparator naturalComparator4 =  NaturalComparator.primary().negativeNumber();
+		NaturalComparator naturalComparator5 =  NaturalComparator.primary().negativeNumber().rationalNumber();
+		NaturalComparator naturalComparator6 =  NaturalComparator.secondary().negativeNumber().rationalNumber();
 		
 		expect:
 
@@ -676,5 +699,46 @@ class NaturalComparatorTest extends Specification {
 		"doc 2"		| "doc02" 	| EQUAL			| EQUAL			| LESS			| EQUAL			| EQUAL			| LESS
 		"doc  2"	| "doc 2" 	| EQUAL			| EQUAL			| GREATER		| EQUAL			| EQUAL			| GREATER
 
+	}
+	
+	def "collator" () {
+
+		given:
+		
+		Collator fr_FRCollator = Collator.getInstance(new Locale("fr","FR")); 
+		
+		
+		NaturalComparator naturalComparator = NaturalComparator.primary().alphaCollator(fr_FRCollator);
+		def expected = [
+			"peach",
+			"pêche",
+			"péché",
+			"sin"
+		]
+
+
+		def list = [
+			"peach",
+			"péché",
+			"pêche",
+			"sin"
+		]
+
+	
+		when: "Do nothing"
+
+		then: "The list aren't equal"
+		list != expected
+
+		when: "Sorting list"
+		Collections.sort(list, naturalComparator)
+
+		then: "The list are equal"
+
+		println "Sorted:   " + list
+		println "Expected: " + expected
+
+
+		list == expected
 	}
 }
