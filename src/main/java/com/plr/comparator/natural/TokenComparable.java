@@ -24,7 +24,7 @@ abstract public class TokenComparable implements Comparable<TokenComparable> {
 	
 	@Override
 	public String toString() {
-		return (isNumber() ? "N>" : "A>") + getStr().toString();
+		return (isNumber() ? "N" : "A") + '\"' + getStr().toString() + '\"';
 	}
 
 	public abstract CharSequence getStr();

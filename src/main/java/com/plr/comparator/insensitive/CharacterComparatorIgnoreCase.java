@@ -1,14 +1,19 @@
 package com.plr.comparator.insensitive;
 
-public class IgnoreCase extends CharacterComparisonStrategy {
-	
-	static private IgnoreCase instance = new IgnoreCase();
+public class CharacterComparatorIgnoreCase implements CharacterComparator {
 
-	public static IgnoreCase getInstance() {
+	static private CharacterComparatorIgnoreCase instance = new CharacterComparatorIgnoreCase();
+
+	public static CharacterComparatorIgnoreCase getInstance() {
 		return instance;
 	}
-	
-	int compare (char c1, char c2) {
+
+	/**
+	 * 
+	 * @see String.CASE_INSENSITIVE_ORDER
+	 */
+	public int compare(char c1, char c2) {
+
 		if (c1 != c2) {
 			c1 = Character.toUpperCase(c1);
 			c2 = Character.toUpperCase(c2);

@@ -75,7 +75,7 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 
 	public InsensitiveComparator ignoreCase() {
 		return new InsensitiveComparator(ignoreOn, leftTrimer, rightTrimer, replace, beginEndFlexibleComparator,
-				IgnoreCase.getInstance());
+				CharacterComparatorIgnoreCase.getInstance());
 	}
 
 	final CharMatcher leftTrimer;
@@ -83,7 +83,7 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 	final CharMatcher ignoreOn;
 	final char replace;
 	final private BeginEndFlexibleComparator beginEndFlexibleComparator;
-	final CharacterComparisonStrategy characterComparisonStrategy;
+	final CharacterComparator characterComparisonStrategy;
 
 	private InsensitiveComparator(BeginEndFlexibleComparator beginEndFlexibleComparator, CharMatcher ignoreOn) {
 		this.leftTrimer = CharMatcher.NONE;
@@ -91,12 +91,12 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 		this.ignoreOn = ignoreOn;
 		this.replace = ' ';
 		this.beginEndFlexibleComparator = beginEndFlexibleComparator;
-		this.characterComparisonStrategy = CharacterComparisonStrategy.getInstance();
+		this.characterComparisonStrategy = CharacterComparatorAscii.getInstance();
 	}
 
 	private InsensitiveComparator(CharMatcher ignoreOn, CharMatcher leftTrimer, CharMatcher rightTrimer, char replace,
 			BeginEndFlexibleComparator beginEndFlexibleComparator,
-			CharacterComparisonStrategy characterComparisonStrategy) {
+			CharacterComparator characterComparisonStrategy) {
 		this.ignoreOn = ignoreOn;
 		this.leftTrimer = leftTrimer;
 		this.rightTrimer = rightTrimer;

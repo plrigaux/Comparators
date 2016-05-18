@@ -38,16 +38,14 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	private static final Logger logger = LoggerFactory.getLogger(NaturalComparator.class);
 
 	final private Comparator<CharSequence> alphaComparator;
-	final private boolean isRationalNumber;
+	final private boolean isHandlingDecimal;
 	final private boolean isNegativeNumber;
-	final private boolean pureNumbers;
+	final private boolean isPrimary;
 	final private boolean isRTrim;
 	final private boolean isLTrim;
 	final private boolean isSpaceInsensitve;
 	final private boolean isSpaceCollapseInsensitve;
-	
-
-
+	final private boolean isNoNumberHeadingSpace;
 
 	final private static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
 	final private static String DEC_REGEX = "((\\.\\d++)(?!\\.\\d))?";
@@ -56,15 +54,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	final Pattern pattern;
 
 	enum Flags {
-		PRIMARY, SECONDARY,
-		LTRIM,
-		RTRIM,
-		TRIM,
-		SPACE_INSENSITVE,
-		SPACE_REPETITION_INSENSITVE,
-		REAL_NUMBER,
-		NEGATIVE_NUMBER,
-		RATIONAL_NUMBER
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_REPETITION_INSENSITVE, REAL_NUMBER, NEGATIVE, DECIMAL, NO_NUMBER_HEADING_SPACE
 	};
 
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
@@ -103,7 +93,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		return alphaComparator(comp);
 	}
 
-	public NaturalComparator realNumber() {
+	public NaturalComparator real() {
 		flagSet.add(Flags.REAL_NUMBER);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
@@ -112,14 +102,29 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		flagSet.add(Flags.TRIM);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
-
-	public NaturalComparator rationalNumber() {
-		flagSet.add(Flags.RATIONAL_NUMBER);
+	
+	public NaturalComparator leftTrim() {
+		flagSet.add(Flags.LTRIM);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+	
+	public NaturalComparator rightTrim() {
+		flagSet.add(Flags.RTRIM);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
 
-	public NaturalComparator negativeNumber() {
-		flagSet.add(Flags.NEGATIVE_NUMBER);
+	public NaturalComparator decimal() {
+		flagSet.add(Flags.DECIMAL);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator negative() {
+		flagSet.add(Flags.NEGATIVE);
+		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
+	}
+
+	public NaturalComparator noNumberHeadingSpace() {
+		flagSet.add(Flags.NO_NUMBER_HEADING_SPACE);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
 
@@ -172,21 +177,24 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 		flagSet.addAll(Arrays.asList(flags));
 
-		pureNumbers = flagSet.contains(Flags.PRIMARY);
-		isRationalNumber = flagSet.contains(Flags.RATIONAL_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
-		isNegativeNumber = flagSet.contains(Flags.NEGATIVE_NUMBER) || flagSet.contains(Flags.REAL_NUMBER);
-		isLTrim = flagSet.contains(PRIMARY) || flagSet.contains(TRIM) || flagSet.contains(LTRIM);
-		isRTrim = flagSet.contains(PRIMARY) || flagSet.contains(TRIM) || flagSet.contains(RTRIM);
+		isPrimary = flagSet.contains(Flags.PRIMARY);
+		isHandlingDecimal = flagSet.contains(Flags.DECIMAL) || flagSet.contains(Flags.REAL_NUMBER);
+		isNegativeNumber = flagSet.contains(Flags.NEGATIVE) || flagSet.contains(Flags.REAL_NUMBER);
+		isLTrim = flagSet.contains(TRIM) || flagSet.contains(LTRIM);
+		isRTrim = flagSet.contains(TRIM) || flagSet.contains(RTRIM);
 		isSpaceCollapseInsensitve = flagSet.contains(SPACE_REPETITION_INSENSITVE);
 		isSpaceInsensitve = flagSet.contains(SPACE_INSENSITVE);
-				
+		isNoNumberHeadingSpace = flagSet.contains(NO_NUMBER_HEADING_SPACE);
+
 		pattern = buildRegEx();
 	}
 
 	private Pattern buildRegEx() {
 		StringBuilder regex = new StringBuilder(200);
 
-		regex.append("\\s*");
+		if (!isNoNumberHeadingSpace) {
+			regex.append("\\s*");
+		}
 
 		if (isNegativeNumber()) {
 			regex.append(NEG_REGEX);
@@ -214,7 +222,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		Tokenizer splitter1 = new Tokenizer(this, s1);
 		Tokenizer splitter2 = new Tokenizer(this, s2);
 
-		List<TokenComparable> list = new ArrayList<>();
+		List<TokenComparable> list = isPrimary ? null : new ArrayList<>();
 
 		int result = 0;
 
@@ -222,10 +230,14 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			TokenComparable ss1 = splitter1.next();
 			TokenComparable ss2 = splitter2.next();
 
-			list.add(ss1);
-			list.add(ss2);
+			if (!isPrimary) {
+				list.add(ss1);
+				list.add(ss2);
+			}
 
 			result = ss1.compareTo(ss2);
+			
+			logger.debug("ss1: {} ss2: {} result:{}", ss1, ss2, result);
 
 			if (result != 0) {
 				return result;
@@ -238,23 +250,9 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			return splitter1.hasNext() ? 1 : -1;
 		}
 
-		if (pureNumbers) {
+		if (!isPrimary) {
 
-			if (splitter1.hasNext() || splitter2.hasNext()) {
-				Tokenizer tokenizerMax = splitter1.hasNext() ? splitter1 : splitter2;
-
-				TokenComparable ss = tokenizerMax.next();
-
-				boolean isAllWhiteSpace = ss.isAllWhiteSpace();
-
-				// means that is tailing white space
-				if (isAllWhiteSpace && !tokenizerMax.hasNext()) {
-					result = 0;
-				}
-
-				return result;
-			}
-		} else { // For now equals, now compare leading zeros
+			// For now equals, now compare leading zeros or spaces
 			int k = 0;
 			int lim = list.size();
 			while (k < lim) {
@@ -275,6 +273,10 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 		return result;
 
+	}
+	
+	class PrimaryStrategy {
+		
 	}
 
 	public boolean equals(String s1, String s2) {
@@ -306,7 +308,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	}
 
 	public boolean isRationalNumber() {
-		return isRationalNumber;
+		return isHandlingDecimal;
 	}
 
 	public boolean isNegativeNumber() {
