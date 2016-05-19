@@ -10,8 +10,11 @@ import static com.plr.comparator.natural.CompType.*
 import spock.lang.Specification
 import static com.plr.comparator.natural.NaturalComparator.Flags
 
-import java.text.Collator;
+import java.text.Collator
+import java.util.Comparator;
 
+import com.plr.comparator.CaseInsensitiveComparator;
+import com.plr.comparator.insensitive.InsensitiveComparator;
 import com.plr.comparator.natural.NaturalComparator;
 import com.plr.comparator.natural.NumberTokenComparable;
 import com.plr.comparator.natural.TokenComparable;
@@ -177,7 +180,8 @@ class NaturalComparatorTest extends Specification {
 
 	def "test sort list ignore case" () {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.primary().caseInsensitive();
+		
+		NaturalComparator naturalComparator = NaturalComparator.primary().comparator(CaseInsensitiveComparator.getInstance());
 
 		def expected = [
 			"zo1.doc",
@@ -229,9 +233,9 @@ class NaturalComparatorTest extends Specification {
 	def "Ignore case and whitespace"() {
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary();
-		naturalComparator =  naturalComparator.caseInsensitive();
-		naturalComparator =  naturalComparator.whiteSpaceInsensitive();
-
+		
+		InsensitiveComparator comparator = InsensitiveComparator.onAllWhiteSpace().ignoreCase();
+		naturalComparator =  naturalComparator.comparator(comparator);
 
 		expect:
 
@@ -656,7 +660,8 @@ class NaturalComparatorTest extends Specification {
 
 	def "Ignore white space"() {
 		given:
-		NaturalComparator naturalComparator = NaturalComparator.primary().whiteSpaceInsensitive();
+		InsensitiveComparator comparator = InsensitiveComparator.onAllWhiteSpace();
+		NaturalComparator naturalComparator = NaturalComparator.primary().comparator(comparator);
 
 		expect:
 
@@ -713,13 +718,10 @@ class NaturalComparatorTest extends Specification {
 
 		given:
 
-
 		Comparator<CharSequence> naturalComparator1 =  NaturalComparator.primary()
 		Comparator<CharSequence> naturalComparator2 =  NaturalComparator.primary().leftTrim()
 		Comparator<CharSequence> naturalComparator3 =  NaturalComparator.primary().rightTrim();
 		Comparator<CharSequence> naturalComparator4 =  NaturalComparator.primary().trim();
-
-		
 		
 		expect:
 
@@ -747,7 +749,7 @@ class NaturalComparatorTest extends Specification {
 		Collator fr_FRCollator = Collator.getInstance(new Locale("fr","FR"));
 
 
-		NaturalComparator naturalComparator = NaturalComparator.primary().alphaCollator(fr_FRCollator);
+		NaturalComparator naturalComparator = NaturalComparator.primary().collator(fr_FRCollator);
 		def expected = [
 			"peach",
 			"pêche",

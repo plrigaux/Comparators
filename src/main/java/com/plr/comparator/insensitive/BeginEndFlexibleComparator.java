@@ -6,7 +6,7 @@ abstract class BeginEndFlexibleComparator {
 
 	abstract int compare(CharSequence string1, CharSequence string2, int length1, int length2, int index1, int index2,
 			InsensitiveComparator insensitiveComparator);
-	
+
 	int compare(CharSequence s1, CharSequence s2, InsensitiveComparator insensitiveComparator) {
 		int length1 = s1.length();
 		int length2 = s2.length();
@@ -16,7 +16,7 @@ abstract class BeginEndFlexibleComparator {
 
 		return compare(s1, s2, length1, length2, index1, index2, insensitiveComparator);
 	}
-	
+
 	static abstract class TrimableComparator extends BeginEndFlexibleComparator {
 		public int compare(CharSequence s1, CharSequence s2, InsensitiveComparator insensitiveComparator) {
 			int length1 = Utils.rightTrim(s1, insensitiveComparator.rightTrimer);
@@ -28,9 +28,9 @@ abstract class BeginEndFlexibleComparator {
 			return compare(s1, s2, length1, length2, index1, index2, insensitiveComparator);
 		}
 	}
-	
+
 	static BeginEndFlexibleComparator REPETITION_INSENSITIVE = new RepetitionInsensitiveComparator();
-	
+
 	static final class RepetitionInsensitiveComparator extends TrimableComparator {
 
 		public int compare(CharSequence s1, CharSequence s2, int length1, int length2, int index1, int index2,
@@ -72,7 +72,8 @@ abstract class BeginEndFlexibleComparator {
 					c2 = insensitiveComparator.replace;
 				}
 
-				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);
+				;
 				if (result != 0) {
 					return result;
 				}
@@ -97,7 +98,7 @@ abstract class BeginEndFlexibleComparator {
 	}
 
 	static BeginEndFlexibleComparator SPACE_TRIM = new SpaceTrimComparator();
-	
+
 	static final class SpaceTrimComparator extends TrimableComparator {
 
 		public int compare(CharSequence s1, CharSequence s2, int length1, int length2, int index1, int index2,
@@ -109,7 +110,8 @@ abstract class BeginEndFlexibleComparator {
 				char c1 = s1.charAt(index1);
 				char c2 = s2.charAt(index2);
 
-				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);
+				;
 				if (result != 0) {
 					return result;
 				}
@@ -121,9 +123,9 @@ abstract class BeginEndFlexibleComparator {
 			return klen ? 1 : (llen ? -1 : 0);
 		}
 	}
-	
+
 	static BeginEndFlexibleComparator CHARACTER_INSENSITIVE = new SpaceInsensitiveComparator();
-	
+
 	private static class SpaceInsensitiveComparator extends BeginEndFlexibleComparator {
 
 		public int compare(CharSequence s1, CharSequence s2, int length1, int length2, int index1, int index2,
@@ -152,7 +154,8 @@ abstract class BeginEndFlexibleComparator {
 					}
 				}
 
-				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);;
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);
+				;
 				if (result != 0) {
 					return result;
 				}
@@ -169,6 +172,34 @@ abstract class BeginEndFlexibleComparator {
 			}
 
 			return 0;
+		}
+	}
+
+	static BeginEndFlexibleComparator SENSITIVE = new CaseInsensitiveComparator();
+
+	private static class CaseInsensitiveComparator extends BeginEndFlexibleComparator {
+
+		public int compare(CharSequence s1, CharSequence s2, int length1, int length2, int index1, int index2,
+				InsensitiveComparator insensitiveComparator) {
+
+			boolean klen = index1 < length1;
+			boolean llen = index2 < length2;
+
+			while (klen && llen) {
+				char c1 = s1.charAt(index1);
+				char c2 = s2.charAt(index2);
+
+				int result = insensitiveComparator.characterComparisonStrategy.compare(c1, c2);
+				;
+				if (result != 0) {
+					return result;
+				}
+
+				klen = ++index1 < length1;
+				llen = ++index2 < length2;
+			}
+	
+			return klen ? 1 :llen ? -1 : 0;
 		}
 	}
 }

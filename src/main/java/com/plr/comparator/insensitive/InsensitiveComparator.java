@@ -73,9 +73,16 @@ public class InsensitiveComparator implements Comparator<CharSequence> {
 				characterComparisonStrategy);
 	}
 
-	public InsensitiveComparator ignoreCase() {
+	public InsensitiveComparator ignoreCase2() {
+
 		return new InsensitiveComparator(ignoreOn, leftTrimer, rightTrimer, replace, beginEndFlexibleComparator,
-				CharacterComparatorIgnoreCase.getInstance());
+				CharacterComparatorIgnoreCase.getInstance() );
+	}
+	
+	public static InsensitiveComparator ignoreCase() {
+
+		BeginEndFlexibleComparator beginEndFlexibleComparator = BeginEndFlexibleComparator.SENSITIVE;
+		return new InsensitiveComparator(beginEndFlexibleComparator, null).ignoreCase2();
 	}
 
 	final CharMatcher leftTrimer;

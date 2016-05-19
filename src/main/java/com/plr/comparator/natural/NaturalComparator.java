@@ -15,12 +15,16 @@ limitations under the License.
 */
 package com.plr.comparator.natural;
 
-import static com.plr.comparator.natural.NaturalComparator.Flags.*;
+import static com.plr.comparator.natural.NaturalComparator.Flags.LTRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.NO_NUMBER_HEADING_SPACE;
+import static com.plr.comparator.natural.NaturalComparator.Flags.PRIMARY;
+import static com.plr.comparator.natural.NaturalComparator.Flags.RTRIM;
+import static com.plr.comparator.natural.NaturalComparator.Flags.SECONDARY;
+import static com.plr.comparator.natural.NaturalComparator.Flags.TRIM;
 
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -30,8 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.plr.comparator.AsciiComparator;
-import com.plr.comparator.CaseInsensitiveComparator;
-import com.plr.comparator.insensitive.InsensitiveComparator;
 
 public final class NaturalComparator implements Comparator<CharSequence> {
 
@@ -43,8 +45,6 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	final private boolean isPrimary;
 	final private boolean isRTrim;
 	final private boolean isLTrim;
-	final private boolean isSpaceInsensitve;
-	final private boolean isSpaceCollapseInsensitve;
 	final private boolean isNoNumberHeadingSpace;
 
 	final private static String NEG_REGEX = "(?:((?<=^|\\s)[-])?";
@@ -54,7 +54,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 	final Pattern pattern;
 
 	enum Flags {
-		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, SPACE_INSENSITVE, SPACE_REPETITION_INSENSITVE, REAL_NUMBER, NEGATIVE, DECIMAL, NO_NUMBER_HEADING_SPACE
+		PRIMARY, SECONDARY, LTRIM, RTRIM, TRIM, REAL_NUMBER, NEGATIVE, DECIMAL, NO_NUMBER_HEADING_SPACE
 	};
 
 	private final EnumSet<NaturalComparator.Flags> flagSet = EnumSet.noneOf(Flags.class);
@@ -64,33 +64,18 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		throw new AssertionError("Instantiating utility class.");
 	}
 
-	public NaturalComparator caseInsensitive() {
-
-		Comparator<CharSequence> comp;
-
-		if (alphaComparator instanceof InsensitiveComparator) {
-			InsensitiveComparator insensitiveComparator = (InsensitiveComparator) alphaComparator;
-
-			comp = insensitiveComparator.ignoreCase();
-		} else {
-			comp = CaseInsensitiveComparator.getInstance();
-		}
-
-		return alphaComparator(comp);
-	}
-
 	public NaturalComparator ascii() {
-		return alphaComparator(AsciiComparator.getInstance());
+		return comparator(AsciiComparator.getInstance());
 	}
 
-	public NaturalComparator alphaComparator(Comparator<CharSequence> alphaComparator) {
+	public NaturalComparator comparator(Comparator<CharSequence> alphaComparator) {
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
 
-	public NaturalComparator alphaCollator(Collator alphaComparator) {
+	public NaturalComparator collator(Collator alphaComparator) {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Comparator<CharSequence> comp = (Comparator) alphaComparator;
-		return alphaComparator(comp);
+		return comparator(comp);
 	}
 
 	public NaturalComparator real() {
@@ -102,12 +87,12 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		flagSet.add(Flags.TRIM);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
-	
+
 	public NaturalComparator leftTrim() {
 		flagSet.add(Flags.LTRIM);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
 	}
-	
+
 	public NaturalComparator rightTrim() {
 		flagSet.add(Flags.RTRIM);
 		return new NaturalComparator(alphaComparator, flagSet.toArray(new Flags[flagSet.size()]));
@@ -148,30 +133,6 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		return new NaturalComparator(AsciiComparator.getInstance(), SECONDARY);
 	}
 
-	public NaturalComparator whiteSpaceInsensitive() {
-
-		InsensitiveComparator comparator = InsensitiveComparator.onAllWhiteSpace();
-
-		if (alphaComparator instanceof CaseInsensitiveComparator) {
-			comparator = comparator.ignoreCase();
-		}
-
-		flagSet.add(Flags.SPACE_INSENSITVE);
-		return new NaturalComparator(comparator, flagSet.toArray(new Flags[flagSet.size()]));
-	}
-
-	public NaturalComparator whiteSpaceRepetitionInsensitive() {
-
-		InsensitiveComparator comparator = InsensitiveComparator.onRepetitionWhiteSpace();
-
-		if (alphaComparator instanceof CaseInsensitiveComparator) {
-			comparator = comparator.ignoreCase();
-		}
-
-		flagSet.add(Flags.SPACE_REPETITION_INSENSITVE);
-		return new NaturalComparator(comparator, flagSet.toArray(new Flags[flagSet.size()]));
-	}
-
 	private NaturalComparator(Comparator<CharSequence> alphaComparator, Flags... flags) {
 		this.alphaComparator = alphaComparator;
 
@@ -182,8 +143,6 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		isNegativeNumber = flagSet.contains(Flags.NEGATIVE) || flagSet.contains(Flags.REAL_NUMBER);
 		isLTrim = flagSet.contains(TRIM) || flagSet.contains(LTRIM);
 		isRTrim = flagSet.contains(TRIM) || flagSet.contains(RTRIM);
-		isSpaceCollapseInsensitve = flagSet.contains(SPACE_REPETITION_INSENSITVE);
-		isSpaceInsensitve = flagSet.contains(SPACE_INSENSITVE);
 		isNoNumberHeadingSpace = flagSet.contains(NO_NUMBER_HEADING_SPACE);
 
 		pattern = buildRegEx();
@@ -236,8 +195,8 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 			}
 
 			result = ss1.compareTo(ss2);
-			
-			logger.debug("ss1: {} ss2: {} result:{}", ss1, ss2, result);
+
+//			logger.debug("ss1: {} ss2: {} result:{}", ss1, ss2, result);
 
 			if (result != 0) {
 				return result;
@@ -266,7 +225,7 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 				}
 			}
 
-			if (result == 0 && !isSpaceInsensitve() && !isSpaceCollapseInsensitve()) {
+			if (result == 0) {
 				result = alphaComparator.compare(s1, s2);
 			}
 		}
@@ -274,9 +233,9 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 		return result;
 
 	}
-	
+
 	class PrimaryStrategy {
-		
+
 	}
 
 	public boolean equals(String s1, String s2) {
@@ -297,14 +256,6 @@ public final class NaturalComparator implements Comparator<CharSequence> {
 
 	public boolean isLTrim() {
 		return isLTrim;
-	}
-
-	public boolean isSpaceInsensitve() {
-		return isSpaceInsensitve;
-	}
-
-	public boolean isSpaceCollapseInsensitve() {
-		return isSpaceCollapseInsensitve;
 	}
 
 	public boolean isRationalNumber() {

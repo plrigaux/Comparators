@@ -1,12 +1,14 @@
 package com.plr.comparator.natural
 
 
+import java.text.Collator;
+
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
 
-class PLRTest {
+class WikiOutputTest {
 
 	@Rule
 	public TestName testName = new TestName();
@@ -114,18 +116,79 @@ class PLRTest {
 
 		displayComparingListElement(rationalNumbers, NaturalComparator.primary().real())
 	}
-	
+
 	@Test
 	public void testTrims() {
-		
-		def trims = ["Doc5.doc " , " Doc5.doc ", " Doc5.doc"]
+
+		def trims = [
+			"Doc5.doc " ,
+			" Doc5.doc ",
+			" Doc5.doc"
+		]
 
 		displayComparingListElement(trims, NaturalComparator.primary().leftTrim())
 		displayComparingListElement(trims, NaturalComparator.primary().rightTrim())
 		displayComparingListElement(trims, NaturalComparator.primary().trim())
 	}
+
+	@Test
+	public void testIgnoreCase() {
+
+		def trims = [
+			"Albert Einstein" ,
+			"Max Planck",
+			"albert einstein"
+		]
+
+		displayComparingListElement(trims, NaturalComparator.primary().ignoreCase())
+	}
+
+	def localWords = [
+		"peach",
+		"pêche",
+		"péché",
+		"sin"
+	]
+
+	@Test
+	public void testCollatorFR() {
+
+
+
+		Collator collator = Collator.getInstance(new Locale("fr","FR"));
+
+
+		Comparator<CharSequence> comp = NaturalComparator.primary().collator(collator);
+
+		displayComparingListElement(localWords, comp)
+	}
 	
-	private displayComparingListElement(List list, NaturalComparator naturalComparator) {
+	@Test
+	public void testCollatorEN() {
+		Collator collator = Collator.getInstance(new Locale("en","EN"));
+		
+		Comparator<CharSequence> comp = NaturalComparator.primary().collator(collator);
+
+		displayComparingListElement(localWords, comp)
+	}
+	
+	@Test
+	public void testCustomComparator() {
+		def words = ["Doc1", "Doc2", "Doc3.doc", "Alpha1", "Beta2", "1Number"]
+		
+		Comparator<CharSequence> compText = new Comparator<CharSequence>() {
+			public int compare(CharSequence s1, CharSequence s2) {
+				return 0;
+			}
+		};
+		
+		Comparator<CharSequence> comp = NaturalComparator.primary().comparator(compText);
+
+		displayComparingListElement(words, comp)
+	}
+
+
+	public static displayComparingListElement(List list, Comparator<CharSequence> naturalComparator) {
 
 		assert list.size() > 0
 
