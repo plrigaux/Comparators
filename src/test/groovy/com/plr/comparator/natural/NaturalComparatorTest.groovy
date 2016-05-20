@@ -23,7 +23,7 @@ import com.plr.comparator.natural.Tokenizer;
 
 class NaturalComparatorTest extends Specification {
 
-	def "Pure numbers" () {
+	def Pure_numbers () {
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary().real();
 
@@ -80,7 +80,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "Pure numbers comparison"() {
+	def Pure_numbers_comparison() {
 
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary().real();
@@ -104,7 +104,7 @@ class NaturalComparatorTest extends Specification {
 	}
 
 
-	def "test sort list" () {
+	def test_sort_list () {
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary();
 
@@ -178,7 +178,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "test sort list ignore case" () {
+	def test_sort_list_ignore_case () {
 		given:
 		
 		NaturalComparator naturalComparator = NaturalComparator.primary().comparator(CaseInsensitiveComparator.getInstance());
@@ -230,7 +230,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "Ignore case and whitespace"() {
+	def Ignore_case_and_whitespace() {
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary();
 		
@@ -247,9 +247,12 @@ class NaturalComparatorTest extends Specification {
 		"A"			| "a"
 		" B"		| "B"
 		" B"		| " b"
+		"A5"		| "a5"
+		" B 5"		| "B    5"
+		" B 6 fgh"	| " b 6 Fgh"
 	}
 
-	def "product names sort"() {
+	def product_names_sort() {
 		given:
 
 		NaturalComparator naturalComparator = NaturalComparator.primary();
@@ -353,7 +356,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "Sort list"() {
+	def Sort_list() {
 
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.secondary().real();
@@ -419,7 +422,7 @@ class NaturalComparatorTest extends Specification {
 		list == expected
 	}
 
-	def "Multiple cases primary vs secondary"() {
+	def Multiple_cases_primary_vs_secondary() {
 		given:
 
 		NaturalComparator naturalComparatorP = NaturalComparator.primary();
@@ -465,7 +468,7 @@ class NaturalComparatorTest extends Specification {
 		return val < 0 ? LESS : val > 0 ? GREATER : EQUAL
 	} 
 
-	def "Multiple cases real Number"() {
+	def Multiple_cases_real_Number() {
 
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.secondary().real();
@@ -500,7 +503,7 @@ class NaturalComparatorTest extends Specification {
 		"1-2 Pizza"				| "1- 2"					| GREATER
 	}
 
-	def "Multiple cases2"() {
+	def Multiple_cases2() {
 
 
 		given:
@@ -519,7 +522,7 @@ class NaturalComparatorTest extends Specification {
 		compToZero (naturalComparator, "z11.doc", "z10.doc", GREATER) == true
 	}
 
-	def "Multiple cases Numbers"() {
+	def Multiple_cases_Numbers() {
 		given:
 
 		NaturalComparator nc = NaturalComparator.primary();
@@ -543,7 +546,7 @@ class NaturalComparatorTest extends Specification {
 	}
 
 
-	def "Multiple white space"() {
+	def Multiple_white_space() {
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.primary().real().trim();
 
@@ -569,7 +572,7 @@ class NaturalComparatorTest extends Specification {
 		"10.300 "	| "10.3"
 	}
 
-	def "Dev test"() {
+	def Dev_test() {
 
 		given:
 		NaturalComparator naturalComparator = NaturalComparator.secondary().real();
@@ -658,7 +661,7 @@ class NaturalComparatorTest extends Specification {
 
 	}
 
-	def "Ignore white space"() {
+	def Ignore_white_space() {
 		given:
 		InsensitiveComparator comparator = InsensitiveComparator.onAllWhiteSpace();
 		NaturalComparator naturalComparator = NaturalComparator.primary().comparator(comparator);
@@ -679,7 +682,7 @@ class NaturalComparatorTest extends Specification {
 	}
 
 
-	def "No decimal"() {
+	def No_decimal() {
 
 		given:
 
@@ -714,7 +717,7 @@ class NaturalComparatorTest extends Specification {
 		"doc  2"	| "doc 2" 	| EQUAL			| EQUAL			| GREATER		| EQUAL			| EQUAL			| GREATER
 	}
 
-	def "Trims"() {
+	def Trims() {
 
 		given:
 
@@ -742,7 +745,7 @@ class NaturalComparatorTest extends Specification {
 		"Doc5.doc"		| "  Doc5.doc  "| GREATER		| LESS		| GREATER		| EQUAL
 	}
 
-	def "collator" () {
+	def collator() {
 
 		given:
 

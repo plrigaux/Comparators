@@ -7,15 +7,15 @@ package com.plr.comparator.insensitive
  */
 
 
+import com.plr.comparator.Utils;
+
 import spock.lang.Specification
 
 
 
 class IgnoreSpaceTest extends Specification {
 
-
-
-	def "Pure numbers comparison equal"() {
+	def pure_numbers_comparison_equal() {
 
 		given:
 
@@ -40,7 +40,7 @@ class IgnoreSpaceTest extends Specification {
 		""				| "\n"
 	}
 
-	def "Pure numbers comparison smaller"() {
+	def pure_numbers_comparison_smaller() {
 
 		given:
 
@@ -60,10 +60,10 @@ class IgnoreSpaceTest extends Specification {
 		" a  b "	| "abc"
 	}
 
-	def "Space Repetition Insensitive comparison equal"() {
+	def Space_Repetition_Insensitive_comparison_equal() {
 
 		given:
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetitionWhiteSpace();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onWhiteSpaceRepetition();
 
 		expect:
 
@@ -82,10 +82,10 @@ class IgnoreSpaceTest extends Specification {
 		""			| ""
 	}
 	
-	def "Space Repetition Insensitive comparison smaller greater"() {
+	def Space_Repetition_Insensitive_comparison_smaller_greater() {
 
 		given:
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetitionWhiteSpace();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onWhiteSpaceRepetition();
 		
 		expect:
 
@@ -101,51 +101,143 @@ class IgnoreSpaceTest extends Specification {
 
 	}
 	
-	def "Space Trim Insensitive comparison smaller equal"() {
-		
-				given:
+	def Space_Trim_Insensitive_comparison_smaller_equal() {
 
-				InsensitiveComparator insensitiveComparator = InsensitiveComparator.trimOnWhiteSpace().trim();
-				
-				expect:
+		given:
+
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onNothing().trim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) == 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| "a "
+		"a"				| " a"
+		"a"				| "a      "
+		"a"				| "      a"
+		"a"				| "   a   "
+		"   a   "		| " a"
+		""				| " "
+		""				| "             "
+		"     "			| ""
+		" "				| ""
+		""				| ""
+	}
+
+	def Space_Trim_Insensitive_comparison_smaller_greater() {
+
+		given:
+
+		Comparator<CharSequence> insensitiveComparator = InsensitiveComparator.onNothing().trim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) < 0;
+		insensitiveComparator.compare(bigger, smaller) > 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| "ab "
+		"a"				| " ab "
+		"  asdf"		| " asdfg"
+		"d "			| "d    g"
+		" d   "			| "e    "
 		
-				insensitiveComparator.compare(smaller, bigger) == 0;
 		
-				where:
+	}
+
+	def Space_Left_Trim_Insensitive_comparison_smaller_equal() {
+
+		given:
+
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onNothing().leftTrim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) == 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| " a"
+		"a"				| "      a"
+		"a   "			| "   a   "
+		" a"      		| "a"		
+		"      a"       | "a"		
+		"   a   "       | "a   "	
 		
-				smaller 		| bigger
-				"a"				| "a "
-				"a"				| " a"
-				"a"				| "a      "
-				"a"				| "      a"
-				"a"				| "   a   "
-				"   a   "		| " a"
-				""				| " "
-				""				| "             "
-				"     "			| ""
-				" "				| ""
-				""				| ""
-		
-			}
+	}
+
+	def Space_Left_Insensitive_comparison_smaller_greater() {
+
+		given:
+
+		Comparator<CharSequence> insensitiveComparator = InsensitiveComparator.onNothing().leftTrim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) < 0;
+		insensitiveComparator.compare(bigger, smaller) > 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| "ab "
+		"a"				| " ab "
+		"  asdf"		| " asdfg"
+		"d "			| "d    g"
+		" d   "			| "e    "
+	}
+
+
+
+	def Space_Right_Trim_Insensitive_comparison_smaller_equal() {
+
+		given:
+
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onNothing().rightTrim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) == 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| "a "
+		"a"				| "a      "
+		"   a"			| "   a   "
+		" a   " 		| " a"
+		""				| " "
+		""				| "             "
+		"     "			| ""
+		" "				| ""
+		""				| ""
+	}
+
+	def Space_Right_Trim_Insensitive_comparison_smaller_greater() {
+
+		given:
+
+		Comparator<CharSequence> insensitiveComparator = InsensitiveComparator.onNothing().rightTrim();
+
+		expect:
+
+		insensitiveComparator.compare(smaller, bigger) < 0;
+		insensitiveComparator.compare(bigger, smaller) > 0;
+
+		where:
+
+		smaller 		| bigger
+		"a"				| "ab "
+		" ac "			| "a"
+		"  asdf"		| " asdfg"
+		"d "			| "d    g"
+		" d   "			| "e    "
+	}
 	
-	def "Space Trim Insensitive comparison smaller greater"() {
-		
-				given:
-		
-				Comparator<CharSequence> insensitiveComparator = InsensitiveComparator.trimOnWhiteSpace().trim();
-				
-				expect:
-		
-				insensitiveComparator.compare(smaller, bigger) < 0;
-				insensitiveComparator.compare(bigger, smaller) > 0;
-		
-				where:
-		
-				smaller 		| bigger
-				"a"				| "ab "
-				"a"				| " ab "
-				"  asdf"		| " asdfg"
-				"d "			| "d    g"
-		
-			}
 }

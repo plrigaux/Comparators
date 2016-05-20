@@ -41,7 +41,7 @@ class InsensitiveWikiOutputTest {
 	@Test
 	public void testOnAllWhiteSpaced() {
 
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onRepetitionWhiteSpace();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onWhiteSpaceRepetition();
 
 		WikiOutputTest.displayComparingListElement(l1, insensitiveComparator)
 	}
@@ -54,7 +54,7 @@ class InsensitiveWikiOutputTest {
 			"albert einstein"
 		]
 		
-		InsensitiveComparator insensitiveComparator = InsensitiveComparator.ignoreCase();
+		InsensitiveComparator insensitiveComparator = InsensitiveComparator.onGeneric();
 
 		WikiOutputTest.displayComparingListElement(words, insensitiveComparator)
 	}
